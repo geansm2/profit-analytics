@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profit Analytics — Análise de Risco</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{--bg:#0f0f10;--surface:#18181b;--s2:#1f1f23;--s3:#26262c;--brd:rgba(255,255,255,.08);--brd2:rgba(255,255,255,.14);--tx:#f2f2f0;--tx2:#a0a09a;--tx3:#64635e;--green:#1baf7a;--gdim:rgba(27,175,122,.12);--gbrd:rgba(27,175,122,.3);--red:#e34948;--rdim:rgba(227,73,72,.12);--rbrd:rgba(227,73,72,.3);--amber:#eda100;--adim:rgba(237,161,0,.12);--abrd:rgba(237,161,0,.3);--blue:#2a78d6;--bdim:rgba(42,120,214,.12);--bbrd:rgba(42,120,214,.3);--r:10px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.wrap{max-width:1120px;margin:0 auto;padding:24px 16px 60px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:32px;height:32px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round}
+.logo-text{font-size:16px;font-weight:600;letter-spacing:-.3px}
+.logo-sub{font-size:11px;color:var(--tx2);margin-top:1px}
+.period-badge{font-size:12px;color:var(--tx2);background:var(--s2);border:1px solid var(--brd2);border-radius:6px;padding:5px 12px}
+.reset-btn{font-size:12px;color:var(--tx3);background:none;border:1px solid var(--brd2);border-radius:6px;padding:5px 12px;cursor:pointer;transition:all .15s}
+.reset-btn:hover{color:var(--tx2)}
+
+/* Upload */
+#upload-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center}
+.upload-card{background:var(--surface);border:1px solid var(--brd2);border-radius:16px;padding:48px 40px;max-width:480px;width:100%}
+.upload-icon{width:64px;height:64px;background:var(--s2);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.upload-icon svg{width:32px;height:32px;stroke:var(--tx2);fill:none;stroke-width:1.5}
+.upload-title{font-size:20px;font-weight:600;margin-bottom:8px}
+.upload-desc{color:var(--tx2);font-size:13px;margin-bottom:28px;line-height:1.6}
+.drop-zone{border:1.5px dashed var(--brd2);border-radius:12px;padding:32px 20px;cursor:pointer;transition:all .2s;margin-bottom:16px;position:relative}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--green);background:var(--gdim)}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-label{color:var(--tx2);font-size:13px;pointer-events:none}
+.drop-label strong{color:var(--green)}
+.upload-hint{font-size:11px;color:var(--tx3)}
+.col-list{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:12px}
+.col-tag{font-size:10px;background:var(--s3);border:1px solid var(--brd);color:var(--tx2);padding:2px 7px;border-radius:4px;font-family:monospace}
+.error-msg{background:var(--rdim);border:1px solid var(--rbrd);color:#f89190;border-radius:var(--r);padding:14px 16px;font-size:13px;margin-top:12px;display:none}
+
+/* Dashboard */
+#dashboard{display:none}
+.section{margin-bottom:28px}
+.sec-hdr{font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sec-hdr::after{content:'';flex:1;height:1px;background:var(--brd)}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi{background:var(--surface);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px}
+.kpi-lbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.kpi-val{font-size:22px;font-weight:600;line-height:1;margin-bottom:4px}
+.kpi-sub{font-size:11px;color:var(--tx2)}
+.kpi.g .kpi-val{color:var(--green)} .kpi.r .kpi-val{color:var(--red)} .kpi.a .kpi-val{color:var(--amber)} .kpi.b .kpi-val{color:var(--blue)}
+.kpi.g{border-color:var(--gbrd)} .kpi.r{border-color:var(--rbrd)}
+
+/* Alerts */
+.alerts{display:flex;flex-direction:column;gap:8px}
+.alert{display:flex;align-items:flex-start;gap:12px;padding:13px 15px;border-radius:var(--r);font-size:13px;line-height:1.55;border:1px solid}
+.alert-icon{font-size:17px;flex-shrink:0;margin-top:1px}
+.alert-title{font-weight:600;display:block;margin-bottom:2px;font-size:13px}
+.alert-msg{font-size:12px;opacity:.85}
+.alert.crit{background:var(--rdim);border-color:var(--rbrd);color:#f89190}
+.alert.warn{background:var(--adim);border-color:var(--abrd);color:#f5c960}
+.alert.ok{background:var(--gdim);border-color:var(--gbrd);color:#5dd4a8}
+.alert.info{background:var(--bdim);border-color:var(--bbrd);color:#70abee}
+
+/* Charts */
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.charts-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.chart-card{background:var(--surface);border:1px solid var(--brd);border-radius:var(--r);padding:16px}
+.chart-title{font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px}
+.chart-wrap{position:relative}
+.h160{height:160px} .h180{height:180px} .h220{height:220px} .h260{height:260px}
+
+/* Quant cards with tooltip */
+.quant-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.qcard{background:var(--s2);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px;position:relative}
+.qcard-lbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.qcard-val{font-size:19px;font-weight:600;margin-bottom:2px}
+.qcard-sub{font-size:11px;color:var(--tx2)}
+.qcard-formula{font-size:10px;color:var(--tx3);margin-top:6px;font-family:monospace;border-top:1px solid var(--brd);padding-top:6px}
+.qcard.g .qcard-val{color:var(--green)} .qcard.r .qcard-val{color:var(--red)} .qcard.a .qcard-val{color:var(--amber)} .qcard.b .qcard-val{color:var(--blue)}
+
+/* Tooltip */
+.info-btn{width:14px;height:14px;border-radius:50%;border:1px solid var(--tx3);background:none;color:var(--tx3);font-size:9px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;padding:0;transition:all .15s}
+.info-btn:hover{border-color:var(--blue);color:var(--blue)}
+.tooltip-wrap{position:relative;display:inline-block}
+.tooltip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1a1a1d;border:1px solid var(--brd2);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--tx2);line-height:1.55;width:260px;z-index:100;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:none}
+.tooltip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#1a1a1d}
+.tooltip-wrap:hover .tooltip-box,.tooltip-wrap.open .tooltip-box{display:block}
+.tooltip-title{font-weight:600;color:var(--tx);display:block;margin-bottom:5px;font-size:12px}
+.tooltip-formula{font-family:monospace;font-size:11px;background:var(--s3);padding:4px 8px;border-radius:4px;display:block;margin-top:6px;color:var(--tx2)}
+
+/* Capital section */
+.capital-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+.cap-card{background:var(--s2);border:1px solid var(--brd);border-radius:var(--r);padding:16px}
+.cap-card-lbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.cap-card-val{font-size:24px;font-weight:600;margin-bottom:4px}
+.cap-card-sub{font-size:11px;color:var(--tx2);line-height:1.5}
+.cap-card.g .cap-card-val{color:var(--green)} .cap-card.a .cap-card-val{color:var(--amber)} .cap-card.b .cap-card-val{color:var(--blue)} .cap-card.r .cap-card-val{color:var(--red)}
+
+/* Monte Carlo */
+.mc-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.mc-stat{background:var(--s3);border-radius:6px;padding:10px 12px;text-align:center}
+.mc-stat-v{font-size:16px;font-weight:600;margin-bottom:2px}
+.mc-stat-l{font-size:10px;color:var(--tx3);text-transform:uppercase}
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.slider-row label{font-size:12px;color:var(--tx2);white-space:nowrap}
+.slider-row input[type=range]{flex:1;min-width:100px;accent-color:var(--blue)}
+.slider-val{font-size:12px;font-weight:600;color:var(--tx);min-width:40px;text-align:right}
+.run-mc-btn{background:var(--bdim);border:1px solid var(--bbrd);color:#70abee;border-radius:6px;padding:7px 16px;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.run-mc-btn:hover{background:var(--blue);color:#fff}
+
+/* Table */
+.table-wrap{background:var(--surface);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden}
+.table-ctrl{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--brd);gap:12px;flex-wrap:wrap}
+.table-ctrl input,.table-ctrl select{background:var(--s2);border:1px solid var(--brd2);color:var(--tx);padding:6px 10px;border-radius:6px;font-size:12px;outline:none}
+.table-ctrl input{width:200px}
+.table-ctrl input:focus{border-color:var(--blue)}
+.tbl-info{font-size:11px;color:var(--tx3)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--brd);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--brd);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--s2)}
+tbody td{padding:8px 12px;white-space:nowrap}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600}
+.badge.g{background:var(--gdim);color:var(--green);border:1px solid var(--gbrd)}
+.badge.r{background:var(--rdim);color:var(--red);border:1px solid var(--rbrd)}
+.badge.a{background:var(--adim);color:var(--amber)}
+.pager{display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:10px 16px;border-top:1px solid var(--brd)}
+.pager button{background:var(--s2);border:1px solid var(--brd2);color:var(--tx2);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px}
+.pager button:hover{background:var(--s3);color:var(--tx)}
+.pager button:disabled{opacity:.3;cursor:not-allowed}
+.pager span{font-size:11px;color:var(--tx3);padding:0 6px}
+
+/* Tabs */
+.tabs{display:flex;gap:2px;background:var(--s2);border-radius:8px;padding:3px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;color:var(--tx2);cursor:pointer;border:none;background:none;transition:all .15s}
+.tab.active{background:var(--surface);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* Responsive */
+@media(max-width:720px){
+  .charts-row,.charts-row-3{grid-template-columns:1fr}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .quant-grid{grid-template-columns:repeat(2,1fr)}
+  .capital-grid{grid-template-columns:1fr 1fr}
+  .mc-bar{grid-template-columns:1fr}
+  .upload-card{padding:32px 20px}
+  .table-ctrl{flex-direction:column;align-items:flex-start}
+  .table-ctrl input{width:100%}
+  .tooltip-box{left:0;transform:none;width:220px}
+  .wrap{padding:16px 12px 40px}
+}
+@media(max-width:400px){
+  .kpi-grid,.capital-grid{grid-template-columns:1fr}
+  .quant-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark"><svg viewBox="0 0 18 18"><polyline points="1,14 5,8 9,11 13,4 17,7"/></svg></div>
+      <div>
+        <div class="logo-text">Profit Analytics</div>
+        <div class="logo-sub">Análise de risco · Sessão local · Sem armazenamento</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="period-badge" id="period-badge" style="display:none"></span>
+      <button class="reset-btn" id="reset-btn" style="display:none" onclick="resetApp()">↩ Novo arquivo</button>
+    </div>
+  </div>
+
+  <!-- Upload -->
+  <div id="upload-screen">
+    <div class="upload-card">
+      <div class="upload-icon"><svg viewBox="0 0 32 32"><path d="M4 24v3a1 1 0 001 1h22a1 1 0 001-1v-3M16 4v18M10 10l6-6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="upload-title">Importar relatório Profit Pro</div>
+      <div class="upload-desc">Exporte o relatório de operações no Profit Pro e carregue aqui. A análise é feita 100% no seu navegador — nenhum dado é enviado a servidores.</div>
+      <div class="drop-zone" id="drop-zone">
+        <input type="file" id="file-input" accept=".csv,.txt">
+        <div class="drop-label">Arraste o arquivo <strong>.csv</strong> aqui<br>ou clique para selecionar</div>
+      </div>
+      <div class="upload-hint">Colunas obrigatória: <code>Res. Operação</code> · todas as demais são opcionais</div>
+      <div class="col-list">
+        <span class="col-tag">Ativo</span><span class="col-tag">Abertura</span><span class="col-tag">Fechamento</span>
+        <span class="col-tag">Lado</span><span class="col-tag">Qtd Compra</span><span class="col-tag">Res. Operação</span>
+        <span class="col-tag">Drawdown</span><span class="col-tag">MEP</span><span class="col-tag">MEN</span>
+        <span class="col-tag">Ganho Max.</span><span class="col-tag">Perda Max.</span><span class="col-tag">Total</span>
+      </div>
+      <div class="error-msg" id="error-msg">Não foi possível ler o arquivo. Verifique se é um CSV exportado pelo Profit Pro com a coluna <strong>Res. Operação</strong>.</div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard">
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('visao')">Visão Geral</button>
+      <button class="tab" onclick="switchTab('risco')">Risco Quantitativo</button>
+      <button class="tab" onclick="switchTab('capital')">Capital &amp; Sizing</button>
+      <button class="tab" onclick="switchTab('monte')">Monte Carlo</button>
+      <button class="tab" onclick="switchTab('ops')">Operações</button>
+    </div>
+
+    <!-- TAB: Visão Geral -->
+    <div class="tab-panel active" id="tab-visao">
+      <div class="section">
+        <div class="sec-hdr">alertas inteligentes</div>
+        <div class="alerts" id="alerts-container"></div>
+      </div>
+      <div class="section">
+        <div class="sec-hdr">indicadores principais</div>
+        <div class="kpi-grid" id="kpi-grid"></div>
+      </div>
+      <div class="section">
+        <div class="sec-hdr">curva de resultado &amp; distribuição</div>
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-title">Resultado acumulado (R$)</div>
+            <div class="chart-wrap h220"><canvas id="equity-chart" role="img" aria-label="Curva de resultado acumulado"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Distribuição de resultados</div>
+            <div class="chart-wrap h220"><canvas id="dist-chart" role="img" aria-label="Histograma de distribuição"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="sec-hdr">análise por período</div>
+        <div class="charts-row-3">
+          <div class="chart-card">
+            <div class="chart-title">Resultado médio por dia</div>
+            <div class="chart-wrap h160"><canvas id="weekday-chart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Win rate por dia</div>
+            <div class="chart-wrap h160"><canvas id="wr-weekday-chart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Resultado médio por hora</div>
+            <div class="chart-wrap h160"><canvas id="hour-chart"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Risco Quantitativo -->
+    <div class="tab-panel" id="tab-risco">
+      <div class="section">
+        <div class="sec-hdr">métricas de risco</div>
+        <div class="quant-grid" id="quant-grid"></div>
+      </div>
+      <div class="section">
+        <div class="sec-hdr">drawdown &amp; ativo</div>
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-title">Drawdown por operação</div>
+            <div class="chart-wrap h180"><canvas id="dd-chart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">P&amp;L por ativo</div>
+            <div class="chart-wrap h180"><canvas id="symbol-chart"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="sec-hdr">análise de eficiência (MEP / MEN)</div>
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-title">Eficiência de captura — ganhos (MEP aproveitado)</div>
+            <div class="chart-wrap h180"><canvas id="mep-chart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Eficiência de saída — perdas (MEN sofrido)</div>
+            <div class="chart-wrap h180"><canvas id="men-chart"></canvas></div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:var(--tx3);line-height:1.6;padding:12px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--brd)">
+          <strong style="color:var(--tx2)">MEP</strong> (Máximo Excursão Positiva): quanto o mercado foi a seu favor antes do fechamento. Se você fechou operações com resultado menor que o MEP sistematicamente, está saindo cedo demais. <br>
+          <strong style="color:var(--tx2)">MEN</strong> (Máximo Excursão Negativa): quanto o mercado foi contra você antes de fechar. Se resultado &gt; MEN frequentemente, você aguenta pressão bem.
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Capital & Sizing -->
+    <div class="tab-panel" id="tab-capital">
+      <div class="section">
+        <div class="sec-hdr">capital necessário para operar</div>
+        <div id="capital-cards" class="capital-grid"></div>
+        <div style="font-size:12px;color:var(--tx3);padding:12px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--brd);line-height:1.6">
+          <strong style="color:var(--tx2)">Margem WIN mini:</strong> ~R$ 1.200/contrato · <strong style="color:var(--tx2)">Margem WDO mini:</strong> ~R$ 1.500/contrato. Verifique os valores atuais na sua corretora — variam com volatilidade.
+        </div>
+      </div>
+      <div class="section">
+        <div class="sec-hdr">expectativa futura por horizonte</div>
+        <div class="chart-card" style="margin-bottom:12px">
+          <div class="chart-title">Resultado esperado acumulado (baseado na expectativa histórica)</div>
+          <div class="chart-wrap h220"><canvas id="expectativa-chart"></canvas></div>
+        </div>
+        <div id="horizon-cards" class="quant-grid"></div>
+      </div>
+      <div class="section">
+        <div class="sec-hdr">análise de sizing — impacto do tamanho de posição</div>
+        <div class="chart-card">
+          <div class="chart-title">Simulação: resultado total por número de contratos (mantendo win rate e razão W/L)</div>
+          <div class="chart-wrap h220"><canvas id="sizing-chart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Monte Carlo -->
+    <div class="tab-panel" id="tab-monte">
+      <div class="section">
+        <div class="sec-hdr">simulação monte carlo</div>
+        <div style="font-size:13px;color:var(--tx2);margin-bottom:16px;line-height:1.6">
+          Simulação de caminhos futuros possíveis baseada na distribuição histórica dos seus resultados. Cada linha é uma sequência aleatória das suas operações — mostra o leque de cenários prováveis dado o seu edge atual.
+        </div>
+        <div class="slider-row">
+          <label>Operações futuras:</label>
+          <input type="range" id="mc-ops" min="20" max="500" value="100" step="10" oninput="document.getElementById('mc-ops-val').textContent=this.value">
+          <span class="slider-val" id="mc-ops-val">100</span>
+          <label>Simulações:</label>
+          <input type="range" id="mc-sims" min="100" max="2000" value="500" step="100" oninput="document.getElementById('mc-sims-val').textContent=this.value">
+          <span class="slider-val" id="mc-sims-val">500</span>
+          <button class="run-mc-btn" onclick="runMonteCarlo()">▶ Rodar simulação</button>
+        </div>
+        <div class="mc-bar" id="mc-stats"></div>
+        <div class="chart-card">
+          <div class="chart-title">Caminhos simulados &amp; percentis (10%, 50%, 90%)</div>
+          <div class="chart-wrap h260"><canvas id="mc-chart"></canvas></div>
+        </div>
+        <div class="chart-card" style="margin-top:12px">
+          <div class="chart-title">Distribuição de resultados finais</div>
+          <div class="chart-wrap h180"><canvas id="mc-dist-chart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Operações -->
+    <div class="tab-panel" id="tab-ops">
+      <div class="section">
+        <div class="sec-hdr">operações <span id="table-count" style="font-size:10px;color:var(--tx3);font-weight:400;text-transform:none;margin-left:4px"></span></div>
+        <div class="table-wrap">
+          <div class="table-ctrl">
+            <input type="text" id="search-input" placeholder="Filtrar por ativo ou data..." oninput="filterTable()">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <select id="side-filter" onchange="filterTable()">
+                <option value="">Todos</option><option value="C">Compra (C)</option><option value="V">Venda (V)</option>
+              </select>
+              <select id="result-filter" onchange="filterTable()">
+                <option value="">Todos</option><option value="win">Somente gains</option><option value="loss">Somente losses</option>
+              </select>
+              <span class="tbl-info" id="table-info"></span>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table id="trades-table">
+              <thead><tr><th>#</th><th>Ativo</th><th>Abertura</th><th>Duração</th><th>Lado</th><th>Qtd</th><th>Resultado</th><th>MEP</th><th>MEN</th><th>Drawdown</th><th>Sequência</th></tr></thead>
+              <tbody id="trades-body"></tbody>
+            </table>
+          </div>
+          <div class="pager">
+            <button onclick="changePage(-1)" id="prev-btn">← Anterior</button>
+            <span id="page-info"></span>
+            <button onclick="changePage(1)" id="next-btn">Próxima →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /dashboard -->
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ─── State ────────────────────────────────────────────
+let allTrades=[],filteredTrades=[],currentPage=1,statsCache=null;
+const PAGE_SIZE=30;
+let charts={};
+
+// ─── Tabs ─────────────────────────────────────────────
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const ids=['visao','risco','capital','monte','ops'];
+    t.classList.toggle('active',ids[i]===id);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+id));
+  if(id==='monte'&&!charts.mc) runMonteCarlo();
+}
+
+// ─── Tooltip toggle (mobile) ──────────────────────────
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.info-btn');
+  if(btn){
+    const wrap=btn.closest('.tooltip-wrap');
+    const wasOpen=wrap.classList.contains('open');
+    document.querySelectorAll('.tooltip-wrap.open').forEach(w=>w.classList.remove('open'));
+    if(!wasOpen) wrap.classList.add('open');
+    e.stopPropagation();
+  } else {
+    document.querySelectorAll('.tooltip-wrap.open').forEach(w=>w.classList.remove('open'));
+  }
+});
+
+// ─── Parse ────────────────────────────────────────────
+function parseBRL(s){
+  if(!s||s.trim()==='-'||s.trim()===' - ') return null;
+  return parseFloat(s.trim().replace(/\./g,'').replace(',','.'));
+}
+
+function parseProfitCSV(text){
+  const lines=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+  let headerIdx=-1;
+  for(let i=0;i<Math.min(20,lines.length);i++){
+    if(lines[i].includes('Ativo')&&lines[i].includes(';')){headerIdx=i;break;}
+  }
+  if(headerIdx<0) return null;
+  const meta={};
+  for(let i=0;i<headerIdx;i++){
+    const l=lines[i];
+    if(l.includes('Data Inicial:')) meta.di=l.split(':').slice(1).join(':').trim();
+    if(l.includes('Data Final:')) meta.df=l.split(':').slice(1).join(':').trim();
+    if(l.includes('Titular:')) meta.titular=l.split(':').slice(1).join(':').trim();
+  }
+  const hdrs=lines[headerIdx].split(';').map(h=>h.trim());
+  const col=name=>hdrs.findIndex(h=>h===name||h.startsWith(name));
+  const C={
+    ativo:col('Ativo'),ab:col('Abertura'),fe:col('Fechamento'),
+    tempo:col('Tempo Operação'),lado:col('Lado'),
+    qtdc:col('Qtd Compra'),qtdv:col('Qtd Venda'),
+    mep:col('MEP'),men:col('MEN'),medio:col('Médio'),
+    resOp:col('Res. Operação'),resInt:col('Res. Intervalo Bruto'),
+    dd:col('Drawdown'),gmax:col('Ganho Max.'),pmax:col('Perda Max.'),
+    numOp:col('Número Operação'),tet:col('TET'),total:col('Total')
+  };
+  if(C.resOp<0) return null;
+  const FD=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  const trades=[];
+  for(let i=headerIdx+1;i<lines.length;i++){
+    const l=lines[i].trim(); if(!l) continue;
+    const cs=l.split(';');
+    if(cs.length<=C.resOp) continue;
+    const resultado=parseBRL(cs[C.resOp]);
+    if(resultado===null) continue;
+    const g=(idx)=>idx>=0&&idx<cs.length?cs[idx].trim():'';
+    let dateObj=null,dateStr='',hour=null;
+    if(C.ab>=0&&cs[C.ab]){
+      const raw=cs[C.ab].trim();
+      const m=raw.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
+      if(m){dateObj=new Date(+m[3],+m[2]-1,+m[1],+m[4],+m[5]);dateStr=`${m[1]}/${m[2]}/${m[3]}`;hour=+m[4];}
+    }
+    // parse tempo to seconds
+    let tempoSec=null;
+    const ts=g(C.tempo);
+    if(ts&&ts!=='-'){
+      let s=0;
+      const hm=ts.match(/(\d+)h/),mm=ts.match(/(\d+)min/),sm=ts.match(/(\d+)s/);
+      if(hm)s+=+hm[1]*3600; if(mm)s+=+mm[1]*60; if(sm)s+=+sm[1];
+      if(s>0)tempoSec=s;
+    }
+    trades.push({
+      num:C.numOp>=0?(parseInt(g(C.numOp))||i-headerIdx):i-headerIdx,
+      ativo:g(C.ativo)||'WIN',abertura:g(C.ab),fechamento:g(C.fe),
+      tempo:g(C.tempo),tempoSec,lado:g(C.lado),
+      qtd:parseInt(g(C.qtdc))||0,
+      resultado,mep:parseBRL(g(C.mep)),men:parseBRL(g(C.men)),
+      drawdown:parseBRL(g(C.dd)),ganhoMax:parseBRL(g(C.gmax)),perdaMax:parseBRL(g(C.pmax)),
+      medio:g(C.medio),total:parseBRL(g(C.total)),
+      dateObj,dateStr,hour,
+      dow:dateObj?dateObj.getDay():-1,
+      dowName:dateObj?FD[dateObj.getDay()]:'',
+      streak:0
+    });
+  }
+  if(trades.length<3) return null;
+  // streaks
+  let streak=0,lastSign=0;
+  for(const t of trades){
+    const sign=t.resultado>0?1:t.resultado<0?-1:0;
+    if(sign===0){t.streak=0;continue;}
+    streak=sign===lastSign?streak+sign:sign;
+    lastSign=sign; t.streak=streak;
+  }
+  return{trades,meta};
+}
+
+// ─── Stats ────────────────────────────────────────────
+function computeStats(trades){
+  const n=trades.length;
+  const results=trades.map(t=>t.resultado);
+  const wins=results.filter(r=>r>0),losses=results.filter(r=>r<0);
+  const winRate=wins.length/n;
+  const avgWin=wins.length?wins.reduce((a,b)=>a+b,0)/wins.length:0;
+  const avgLoss=losses.length?Math.abs(losses.reduce((a,b)=>a+b,0)/losses.length):0;
+  const totalPnl=results.reduce((a,b)=>a+b,0);
+  const expectancy=(winRate*avgWin)-((1-winRate)*avgLoss);
+  const mean=totalPnl/n;
+  const variance=results.reduce((a,r)=>a+(r-mean)**2,0)/n;
+  const stdDev=Math.sqrt(variance);
+  const kelly=avgLoss>0?winRate-(1-winRate)*(avgLoss/avgWin):0;
+  const kellyQ=Math.max(0,kelly*0.25);
+  const sorted=[...results].sort((a,b)=>a-b);
+  const vi95=Math.max(0,Math.floor(n*0.05)-1);
+  const vi99=Math.max(0,Math.floor(n*0.01)-1);
+  const var95=sorted[vi95]??sorted[0];
+  const var99=sorted[vi99]??sorted[0];
+  const cvar95=sorted.slice(0,vi95+1).reduce((a,b)=>a+b,0)/(vi95+1)||var95;
+  let maxDD=0,peak=0,running=0;
+  const equity=[],ddSeries=[];
+  for(const r of results){
+    running+=r; equity.push(+running.toFixed(2));
+    if(running>peak)peak=running;
+    const dd=peak-running; ddSeries.push(-dd);
+    if(dd>maxDD)maxDD=dd;
+  }
+  const grossW=wins.reduce((a,b)=>a+b,0);
+  const grossL=Math.abs(losses.reduce((a,b)=>a+b,0));
+  const profitFactor=grossL>0?grossW/grossL:99;
+  const sharpe=stdDev>0?(mean/stdDev)*Math.sqrt(252):0;
+  // day stats
+  const dowStats={};
+  ['Segunda','Terça','Quarta','Quinta','Sexta'].forEach(d=>dowStats[d]={sum:0,wins:0,total:0});
+  trades.forEach(t=>{if(dowStats[t.dowName]){dowStats[t.dowName].sum+=t.resultado;dowStats[t.dowName].total++;if(t.resultado>0)dowStats[t.dowName].wins++;}});
+  const dayStats=Object.entries(dowStats).map(([d,s])=>({day:d,avg:s.total?s.sum/s.total:0,wr:s.total?s.wins/s.total:0,count:s.total}));
+  // hour stats
+  const hourStats={};
+  trades.forEach(t=>{if(t.hour!==null){if(!hourStats[t.hour])hourStats[t.hour]={sum:0,n:0};hourStats[t.hour].sum+=t.resultado;hourStats[t.hour].n++;}});
+  // post-loss WR
+  const postLoss=[],postWin=[];
+  for(let i=1;i<trades.length;i++){
+    if(trades[i-1].resultado<0)postLoss.push(trades[i].resultado>0?1:0);
+    if(trades[i-1].resultado>0)postWin.push(trades[i].resultado>0?1:0);
+  }
+  const postLossWR=postLoss.length?postLoss.reduce((a,b)=>a+b,0)/postLoss.length:winRate;
+  const postWinWR=postWin.length?postWin.reduce((a,b)=>a+b,0)/postWin.length:winRate;
+  // symbol breakdown
+  const symStats={};
+  trades.forEach(t=>{const s=t.ativo.replace(/[MNQFGHJKUVXZ]\d+/,'');if(!symStats[s])symStats[s]={sum:0,n:0,wins:0};symStats[s].sum+=t.resultado;symStats[s].n++;if(t.resultado>0)symStats[s].wins++;});
+  // max streaks
+  let maxWS=0,maxLS=0,cur=0,curL=0;
+  for(const r of results){if(r>0){cur++;curL=0;maxWS=Math.max(maxWS,cur);}else if(r<0){curL++;cur=0;maxLS=Math.max(maxLS,curL);}else{cur=0;curL=0;}}
+  // MEP/MEN efficiency
+  const mepEff=[],menEff=[];
+  trades.forEach(t=>{
+    if(t.mep&&t.mep>0&&t.resultado!==null)mepEff.push(t.resultado/t.mep);
+    if(t.men&&t.men<0&&t.resultado!==null)menEff.push(t.resultado/Math.abs(t.men));
+  });
+  // avg qtd
+  const qtds=trades.map(t=>t.qtd).filter(q=>q>0);
+  const avgQtd=qtds.length?qtds.reduce((a,b)=>a+b,0)/qtds.length:1;
+  const medQtd=qtds.length?qtds.sort((a,b)=>a-b)[Math.floor(qtds.length/2)]:1;
+  const maxQtd=qtds.length?Math.max(...qtds):1;
+  return{n,wins:wins.length,losses:losses.length,winRate,avgWin,avgLoss,totalPnl,expectancy,mean,stdDev,kelly,kellyQ,var95,var99,cvar95,maxDD,profitFactor,sharpe,equity,ddSeries,results,dayStats,hourStats,postLossWR,postWinWR,symStats,maxWinSeq:maxWS,maxLossSeq:maxLS,grossW,grossL,mepEff,menEff,avgQtd,medQtd,maxQtd,trades};
+}
+
+// ─── Helpers ──────────────────────────────────────────
+const fmtR=v=>{const n=Math.round(v);return(n<0?'-':'')+'R$ '+Math.abs(n).toLocaleString('pt-BR');};
+const pct=v=>(v*100).toFixed(1)+'%';
+const GC='rgba(27,175,122,.7)',RC='rgba(227,73,72,.7)',AC='rgba(237,161,0,.7)',BC='rgba(42,120,214,.7)';
+const GRID='rgba(255,255,255,.05)',TICK='#64635e';
+const baseOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:GRID},ticks:{color:TICK,maxRotation:45}},y:{grid:{color:GRID},ticks:{color:TICK}}}};
+
+function destroyCharts(){Object.values(charts).forEach(c=>c&&c.destroy&&c.destroy());charts={};}
+
+// ─── Tooltip HTML builder ──────────────────────────────
+function tip(title,desc,formula=''){
+  return `<div class="tooltip-wrap">
+    <button class="info-btn" aria-label="Explicação: ${title}">?</button>
+    <div class="tooltip-box">
+      <span class="tooltip-title">${title}</span>
+      ${desc}
+      ${formula?`<span class="tooltip-formula">${formula}</span>`:''}
+    </div>
+  </div>`;
+}
+
+// ─── Alerts ───────────────────────────────────────────
+function buildAlerts(s){
+  const A=[];
+  const p=(t,i,ti,m)=>A.push({type:t,icon:i,title:ti,msg:m});
+  if(s.expectancy<0) p('crit','🚨','Expectativa negativa — estratégia destrói capital',`Cada operação perde em média ${fmtR(Math.abs(s.expectancy))}. Win rate de ${pct(s.winRate)} não é suficiente quando a perda média (${fmtR(s.avgLoss)}) supera o ganho (${fmtR(s.avgWin)}).`);
+  else if(s.expectancy<50) p('warn','⚠️','Expectativa positiva mas marginal',`Ganho médio por operação: ${fmtR(s.expectancy)}. Edge muito fino — custos operacionais podem inverter o resultado.`);
+  else p('ok','✅','Expectativa positiva confirmada',`Cada operação gera em média ${fmtR(s.expectancy)}. Foco em manter consistência no tamanho de posição.`);
+  if(s.kelly<0) p('crit','📉','Critério de Kelly negativo',`Kelly = ${pct(s.kelly)}. Nenhum tamanho de posição corrige isso — é necessário melhorar o edge antes de continuar.`);
+  else if(s.kelly>0.3) p('warn','⚡','Kelly elevado — use apenas a fração segura',`Kelly bruto = ${pct(s.kelly)}. Use no máximo ¼ Kelly = ${pct(s.kellyQ)} para evitar ruína por variância.`);
+  else p('info','🎯',`Kelly ¼ seguro: ${pct(s.kellyQ)}`,`Limite recomendado de exposição: ${pct(s.kellyQ)} do capital por operação. Kelly bruto = ${pct(s.kelly)}.`);
+  p(s.var95<-1000?'crit':'warn','🛡️',`VaR 95%: ${fmtR(s.var95)} · CVaR: ${fmtR(s.cvar95)}`,`Em 5% das operações, a perda supera ${fmtR(Math.abs(s.var95))}. A perda esperada na cauda (CVaR) é ${fmtR(Math.abs(s.cvar95))}. Configure seu stop diário em torno desse valor.`);
+  const ratio=s.avgWin/s.avgLoss;
+  if(ratio<0.8) p('crit','⚖️',`Razão ganho/perda invertida: ${ratio.toFixed(2)}x`,`Ganho médio (${fmtR(s.avgWin)}) muito menor que perda (${fmtR(s.avgLoss)}). Para compensar, o win rate precisaria ser acima de ${pct(s.avgLoss/(s.avgWin+s.avgLoss))}.`);
+  else if(ratio<1) p('warn','⚖️',`Razão ganho/perda: ${ratio.toFixed(2)}x`,`Ganho médio (${fmtR(s.avgWin)}) ainda abaixo da perda (${fmtR(s.avgLoss)}). Ajuste alvos ou reduza stops.`);
+  else p('ok','⚖️',`Razão ganho/perda saudável: ${ratio.toFixed(2)}x`,`Ganho médio ${fmtR(s.avgWin)} × perda média ${fmtR(s.avgLoss)}.`);
+  if(s.postLossWR<s.winRate-0.08) p('crit','🧠','Sinal de revenge trading detectado',`Win rate geral: ${pct(s.winRate)} · Após uma perda: ${pct(s.postLossWR)}. Queda de ${pct(s.winRate-s.postLossWR)} indica deterioração emocional pós-loss. Implemente pausa obrigatória após stops.`);
+  const worstDay=s.dayStats.reduce((a,b)=>b.avg<a.avg?b:a,s.dayStats[0]);
+  if(worstDay.avg<-100&&worstDay.count>3) p('warn','📅',`${worstDay.day}-feira: pior dia — média ${fmtR(worstDay.avg)}`,`${worstDay.count} operações com resultado médio negativo. Win rate: ${pct(worstDay.wr)}. Considere reduzir tamanho ou evitar operar neste dia.`);
+  if(s.maxDD>2000) p(s.maxDD>5000?'crit':'warn','📊',`Drawdown máximo: ${fmtR(-s.maxDD)}`,`Stop diário sugerido: ${fmtR(Math.abs(s.var95)*1.5)} (1.5× VaR 95%).`);
+  if(s.profitFactor<1) p('crit','🏭',`Profit factor: ${s.profitFactor.toFixed(2)} (abaixo de 1)`,`Cada R$ 1 perdido gera apenas R$ ${s.profitFactor.toFixed(2)} em ganhos. Estratégia não é lucrativa no período.`);
+  else if(s.profitFactor<1.3) p('warn','🏭',`Profit factor marginal: ${s.profitFactor.toFixed(2)}`,`Referência: acima de 1.3 para estratégias consistentes.`);
+  else p('ok','🏭',`Profit factor: ${s.profitFactor.toFixed(2)}`,`Cada R$ 1 em perdas gerou R$ ${s.profitFactor.toFixed(2)} em ganhos.`);
+  return A;
+}
+
+// ─── Render: KPIs ─────────────────────────────────────
+function renderKPIs(s){
+  const g=document.getElementById('kpi-grid');
+  const items=[
+    {l:'Operações',v:s.n,sub:`${s.wins}W · ${s.losses}L`,c:''},
+    {l:'Resultado Total',v:fmtR(s.totalPnl),sub:`${pct(s.winRate)} win rate`,c:s.totalPnl>0?'g':'r'},
+    {l:'Expectativa/op',v:fmtR(s.expectancy),sub:'ganho médio esperado',c:s.expectancy>0?'g':'r'},
+    {l:'Profit Factor',v:s.profitFactor>90?'∞':s.profitFactor.toFixed(2),sub:'ganhos/perdas brutas',c:s.profitFactor>=1.3?'g':s.profitFactor>=1?'a':'r'},
+    {l:'Ganho médio',v:fmtR(s.avgWin),sub:'por operação ganha',c:'g'},
+    {l:'Perda média',v:fmtR(-s.avgLoss),sub:'por operação perdida',c:'r'},
+    {l:'Sharpe anual.',v:s.sharpe.toFixed(2),sub:'ajustado por risco',c:s.sharpe>1?'g':s.sharpe>0?'a':'r'},
+    {l:'Drawdown máx.',v:fmtR(-s.maxDD),sub:'pico → vale',c:'r'},
+  ];
+  g.innerHTML=items.map(k=>`<div class="kpi ${k.c}"><div class="kpi-lbl">${k.l}</div><div class="kpi-val">${k.v}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
+}
+
+// ─── Render: Alerts ───────────────────────────────────
+function renderAlerts(alerts){
+  document.getElementById('alerts-container').innerHTML=alerts.map(a=>`<div class="alert ${a.type}"><span class="alert-icon">${a.icon}</span><div><span class="alert-title">${a.title}</span><span class="alert-msg">${a.msg}</span></div></div>`).join('');
+}
+
+// ─── Render: Quant with tooltips ──────────────────────
+function renderQuant(s){
+  const ratio=s.avgLoss>0?s.avgWin/s.avgLoss:99;
+  const items=[
+    {l:'VaR 95%',v:fmtR(s.var95),sub:'perda esperada 95% das ops',c:s.var95<-800?'r':'a',
+     tip_t:'Value at Risk 95%',tip_d:'Em 5% das operações, a perda esperada supera este valor. Calculado como o percentil 5% da distribuição histórica dos resultados.',tip_f:'sort(results)[floor(n*0.05)]'},
+    {l:'VaR 99%',v:fmtR(s.var99),sub:'pior 1% das operações',c:'r',
+     tip_t:'Value at Risk 99%',tip_d:'Cenário de stress: perda esperada no pior 1% das operações. Use para dimensionar capital de reserva.',tip_f:'sort(results)[floor(n*0.01)]'},
+    {l:'CVaR 95%',v:fmtR(s.cvar95),sub:'perda média na cauda',c:'r',
+     tip_t:'Conditional VaR (Expected Shortfall)',tip_d:'Média das perdas que superam o VaR 95%. Mais conservador que o VaR porque mede a severidade dos piores cenários, não apenas o limiar.',tip_f:'E[X | X < VaR₀.₀₅]'},
+    {l:'Kelly bruto',v:pct(s.kelly),sub:'fração ótima teórica',c:s.kelly<0?'r':s.kelly>0.3?'a':'g',
+     tip_t:'Critério de Kelly',tip_d:'Fração do capital que maximiza o crescimento geométrico da conta. Acima de 30% é perigoso pela variância. Negativo significa que a estratégia destrói capital.',tip_f:'W − (1−W)×(L/G)'},
+    {l:'Kelly ¼ (safe)',v:pct(s.kellyQ),sub:'exposição recomendada',c:'b',
+     tip_t:'Fração de Kelly — versão conservadora',tip_d:'Uso prático: utilize apenas 25% do Kelly bruto. Reduz volatilidade da conta em ~75% com perda pequena de crescimento esperado. Padrão na literatura de gestão de risco.',tip_f:'0.25 × Kelly'},
+    {l:'Payoff ratio',v:ratio.toFixed(2)+'x',sub:'ganho médio / perda média',c:ratio>=1?'g':'r',
+     tip_t:'Payoff Ratio (Risk/Reward)',tip_d:'Quantas vezes o ganho médio supera a perda média. Abaixo de 1 significa que você perde mais do que ganha por operação — precisa de win rate alto para compensar.',tip_f:'avg_win / avg_loss'},
+    {l:'Breakeven WR',v:pct(s.avgLoss/(s.avgWin+s.avgLoss)),sub:'win rate mínimo para lucrar',c:'a',
+     tip_t:'Win rate de equilíbrio',tip_d:'Percentual mínimo de operações vencedoras para que a estratégia seja lucrativa, dado o payoff ratio atual. Se seu win rate real estiver abaixo disso, você perde dinheiro.',tip_f:'L / (W + L)'},
+    {l:'WR pós-perda',v:pct(s.postLossWR),sub:`vs ${pct(s.winRate)} geral`,c:s.postLossWR<s.winRate-0.08?'r':'g',
+     tip_t:'Win rate após operação perdedora',tip_d:'Se este número for muito menor que o win rate geral, indica que você opera de forma diferente após uma perda — possivelmente por viés emocional (revenge trading). Diferença > 8pp é sinal de alerta.',tip_f:'wins_after_loss / ops_after_loss'},
+    {l:'Sharpe anual.',v:s.sharpe.toFixed(2),sub:'retorno ajustado por risco',c:s.sharpe>1?'g':s.sharpe>0?'a':'r',
+     tip_t:'Sharpe Ratio anualizado',tip_d:'Mede retorno por unidade de risco. Acima de 1.0 é considerado bom. Acima de 2.0 é excelente. Valores negativos indicam que você seria melhor em renda fixa.',tip_f:'(mean/stdDev) × √252'},
+    {l:'Seq. ganhos máx.',v:s.maxWinSeq,sub:'consecutivas',c:'g',
+     tip_t:'Sequência máxima de ganhos',tip_d:'O maior número de operações vencedoras consecutivas no histórico. Útil para entender o perfil de clustering dos resultados.',tip_f:'max consecutive wins'},
+    {l:'Seq. perdas máx.',v:s.maxLossSeq,sub:'consecutivas',c:'r',
+     tip_t:'Sequência máxima de perdas',tip_d:'O maior número de operações perdedoras consecutivas. Use para calcular o capital mínimo necessário para sobreviver ao drawdown mais longo.',tip_f:'max consecutive losses'},
+  ];
+  document.getElementById('quant-grid').innerHTML=items.map(k=>`
+    <div class="qcard ${k.c}">
+      <div class="qcard-lbl">${k.l} ${tip(k.tip_t,k.tip_d,k.tip_f)}</div>
+      <div class="qcard-val">${k.v}</div>
+      <div class="qcard-sub">${k.sub}</div>
+    </div>`).join('');
+}
+
+// ─── Render: Capital & Sizing ─────────────────────────
+function renderCapital(s){
+  const MARGIN_WIN=1200,MARGIN_WDO=1500;
+  const med=s.medQtd,avg=Math.round(s.avgQtd);
+  const symbol=s.trades[0]?s.trades[0].ativo:'WIN';
+  const margin=symbol.startsWith('WDO')?MARGIN_WDO:MARGIN_WIN;
+  const capMargem=Math.round(avg*margin);
+  const capSafe=Math.round(Math.abs(s.var99)*s.maxLossSeq*1.5);
+  const capRecomendado=Math.max(capMargem*3,capSafe);
+  const stopDiario=Math.round(Math.abs(s.cvar95)*1.5);
+  const items=[
+    {l:'Capital margem (avg qtd)',v:fmtR(capMargem),sub:`${avg} contratos × R$ ${margin} de margem`,c:'a',
+     tip_t:'Capital mínimo de margem',tip_d:`Baseado na quantidade média de contratos operados (${avg}) × margem por contrato da sua corretora. Este é o mínimo absoluto — sem buffer para drawdown.`},
+    {l:'Capital recomendado',v:fmtR(capRecomendado),sub:'inclui buffer de drawdown',c:'b',
+     tip_t:'Capital operacional sugerido',tip_d:`Max(3× margem, 1.5× VaR99 × max_streak_perdas). Permite sobreviver ao pior drawdown histórico com margem de segurança.`},
+    {l:'Stop diário sugerido',v:fmtR(stopDiario),sub:'1.5× CVaR 95%',c:'r',
+     tip_t:'Stop loss diário recomendado',tip_d:'Baseado no CVaR 95% — a perda média esperada nos piores 5% das suas sessões. Zere a tela ao atingir este valor.`'},
+    {l:'Resultado/contrato',v:fmtR(s.expectancy/avg),sub:'expectativa normalizada',c:s.expectancy>0?'g':'r',
+     tip_t:'Expectativa por contrato',tip_d:'Divide a expectativa bruta pela quantidade média de contratos. Mostra quanto cada contrato marginal contribui esperado por operação.'},
+  ];
+  document.getElementById('capital-cards').innerHTML=items.map(k=>`
+    <div class="cap-card ${k.c}">
+      <div class="cap-card-lbl" style="display:flex;align-items:center;gap:5px">${k.l} ${tip(k.tip_t,k.tip_d)}</div>
+      <div class="cap-card-val">${k.v}</div>
+      <div class="cap-card-sub">${k.sub}</div>
+    </div>`).join('');
+
+  // Horizon expectancy
+  const horizons=[10,50,100,200,500];
+  const hCards=horizons.map(h=>{
+    const exp=s.expectancy*h;
+    const sd=s.stdDev*Math.sqrt(h);
+    const ci90=1.645*sd;
+    return {h,exp,sd,ci90,c:exp>0?'g':'r'};
+  });
+  document.getElementById('horizon-cards').innerHTML=hCards.map(h=>`
+    <div class="qcard ${h.c}">
+      <div class="qcard-lbl">${h.h} operações ${tip('Projeção linear','Baseado na expectativa histórica × número de operações. Assume distribuição estacionária — não garante resultados futuros.',`E = ${Math.round(s.expectancy)}×N ± 1.645×σ√N`)}</div>
+      <div class="qcard-val">${fmtR(h.exp)}</div>
+      <div class="qcard-sub">IC 90%: ±${fmtR(h.ci90)}</div>
+    </div>`).join('');
+}
+
+// ─── Render: Charts ───────────────────────────────────
+function renderCharts(s){
+  destroyCharts();
+  const n=s.equity.length,labels=s.equity.map((_,i)=>`${i+1}`);
+  const isProfit=s.equity[n-1]>0;
+
+  charts.equity=new Chart(document.getElementById('equity-chart'),{type:'line',data:{labels,datasets:[{data:s.equity,borderColor:isProfit?'#1baf7a':'#e34948',backgroundColor:isProfit?'rgba(27,175,122,.08)':'rgba(227,73,72,.08)',borderWidth:2,pointRadius:0,fill:true,tension:0.25}]},options:{...baseOpts,scales:{x:{display:false},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v).toLocaleString('pt-BR')}}}}});
+
+  const mn=Math.min(...s.results),mx=Math.max(...s.results),bins=20,bsz=(mx-mn)/bins||1;
+  const counts=Array(bins).fill(0);
+  s.results.forEach(r=>{const idx=Math.min(Math.floor((r-mn)/bsz),bins-1);counts[idx]++;});
+  const bLabels=Array(bins).fill(0).map((_,i)=>Math.round(mn+i*bsz));
+  charts.dist=new Chart(document.getElementById('dist-chart'),{type:'bar',data:{labels:bLabels,datasets:[{data:counts,backgroundColor:bLabels.map(l=>l>=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK,maxRotation:45,autoSkip:true,maxTicksLimit:8,callback:(_,i)=>bLabels[i]}},y:{grid:{color:GRID},ticks:{color:TICK}}}}});
+
+  const dL=s.dayStats.map(d=>d.day.substring(0,3)),dA=s.dayStats.map(d=>+d.avg.toFixed(0));
+  charts.weekday=new Chart(document.getElementById('weekday-chart'),{type:'bar',data:{labels:dL,datasets:[{data:dA,backgroundColor:dA.map(v=>v>=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
+
+  const wrV=s.dayStats.map(d=>+(d.wr*100).toFixed(1));
+  charts.wrWeekday=new Chart(document.getElementById('wr-weekday-chart'),{type:'bar',data:{labels:dL,datasets:[{data:wrV,backgroundColor:wrV.map(v=>v>=50?BC:AC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'%'},min:0,max:100}}}});
+
+  const hE=Object.entries(s.hourStats).sort((a,b)=>+a[0]-+b[0]);
+  if(hE.length){
+    const hL=hE.map(([h])=>h+'h'),hA=hE.map(([,v])=>+(v.sum/v.n).toFixed(0));
+    charts.hour=new Chart(document.getElementById('hour-chart'),{type:'bar',data:{labels:hL,datasets:[{data:hA,backgroundColor:hA.map(v=>v>=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
+  }
+
+  charts.dd=new Chart(document.getElementById('dd-chart'),{type:'line',data:{labels,datasets:[{data:s.ddSeries,borderColor:'#e34948',backgroundColor:'rgba(227,73,72,.08)',borderWidth:1.5,pointRadius:0,fill:true,tension:0.2}]},options:{...baseOpts,scales:{x:{display:false},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v).toLocaleString('pt-BR')}}}}});
+
+  const sE=Object.entries(s.symStats).sort((a,b)=>b[1].sum-a[1].sum);
+  charts.symbol=new Chart(document.getElementById('symbol-chart'),{type:'bar',data:{labels:sE.map(([s])=>s),datasets:[{data:sE.map(([,v])=>+v.sum.toFixed(0)),backgroundColor:sE.map(([,v])=>v.sum>=0?GC:RC)}]},options:{...baseOpts,indexAxis:'y',scales:{x:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}},y:{grid:{display:false},ticks:{color:TICK}}}}});
+
+  // MEP efficiency scatter
+  const mepData=s.trades.filter(t=>t.mep&&t.mep>0).map(t=>({x:t.mep,y:t.resultado}));
+  if(mepData.length){
+    charts.mep=new Chart(document.getElementById('mep-chart'),{type:'scatter',data:{datasets:[{data:mepData,backgroundColor:mepData.map(d=>d.y>0?GC:RC),pointRadius:3}]},options:{...baseOpts,scales:{x:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v},title:{display:true,text:'MEP (R$)',color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v},title:{display:true,text:'Resultado (R$)',color:TICK}}}}});
+  }
+  const menData=s.trades.filter(t=>t.men&&t.men<0).map(t=>({x:Math.abs(t.men),y:t.resultado}));
+  if(menData.length){
+    charts.men=new Chart(document.getElementById('men-chart'),{type:'scatter',data:{datasets:[{data:menData,backgroundColor:menData.map(d=>d.y>0?GC:RC),pointRadius:3}]},options:{...baseOpts,scales:{x:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v},title:{display:true,text:'|MEN| (R$)',color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v},title:{display:true,text:'Resultado (R$)',color:TICK}}}}});
+  }
+
+  // Expectativa acumulada
+  const horizons=[10,25,50,75,100,150,200,300,500];
+  const expLine=horizons.map(h=>s.expectancy*h);
+  const upper=horizons.map((h,i)=>expLine[i]+1.645*s.stdDev*Math.sqrt(h));
+  const lower=horizons.map((h,i)=>expLine[i]-1.645*s.stdDev*Math.sqrt(h));
+  charts.expectativa=new Chart(document.getElementById('expectativa-chart'),{
+    type:'line',
+    data:{labels:horizons.map(h=>h+'ops'),datasets:[
+      {data:upper,borderColor:'rgba(27,175,122,.3)',borderDash:[4,4],pointRadius:0,borderWidth:1,fill:'+1',backgroundColor:'rgba(27,175,122,.05)'},
+      {data:expLine,borderColor:'#1baf7a',borderWidth:2,pointRadius:3,fill:false,label:'Esperado'},
+      {data:lower,borderColor:'rgba(227,73,72,.3)',borderDash:[4,4],pointRadius:0,borderWidth:1,fill:false}
+    ]},
+    options:{...baseOpts,plugins:{legend:{display:false}},scales:{x:{grid:{color:GRID},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v).toLocaleString('pt-BR')}}}}
+  });
+
+  // Sizing simulation
+  const contracts=[1,2,3,4,5,6,8,10,15,20];
+  const base1Exp=s.expectancy/Math.max(s.medQtd,1);
+  const sizingData=contracts.map(c=>+(base1Exp*c*100).toFixed(0));
+  charts.sizing=new Chart(document.getElementById('sizing-chart'),{type:'bar',data:{labels:contracts.map(c=>c+'x'),datasets:[{data:sizingData,backgroundColor:sizingData.map(v=>v>=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v.toLocaleString('pt-BR')}}}}});
+}
+
+// ─── Monte Carlo ──────────────────────────────────────
+function runMonteCarlo(){
+  if(!statsCache) return;
+  const s=statsCache;
+  const nOps=parseInt(document.getElementById('mc-ops').value)||100;
+  const nSims=parseInt(document.getElementById('mc-sims').value)||500;
+  const results=s.results;
+
+  const finals=[],paths=[];
+  for(let sim=0;sim<nSims;sim++){
+    let running=0;
+    const path=[0];
+    for(let op=0;op<nOps;op++){
+      const r=results[Math.floor(Math.random()*results.length)];
+      running+=r; path.push(running);
+    }
+    finals.push(running);
+    if(sim<50) paths.push(path); // show 50 paths max
+  }
+  finals.sort((a,b)=>a-b);
+  const p10=finals[Math.floor(nSims*0.1)],p50=finals[Math.floor(nSims*0.5)],p90=finals[Math.floor(nSims*0.9)];
+  const ruin=finals.filter(f=>f<-Math.abs(s.var99)*3).length/nSims;
+
+  document.getElementById('mc-stats').innerHTML=`
+    <div class="mc-stat"><div class="mc-stat-v" style="color:var(--red)">${fmtR(p10)}</div><div class="mc-stat-l">Pior 10%</div></div>
+    <div class="mc-stat"><div class="mc-stat-v" style="color:var(--amber)">${fmtR(p50)}</div><div class="mc-stat-l">Mediana</div></div>
+    <div class="mc-stat"><div class="mc-stat-v" style="color:var(--green)">${fmtR(p90)}</div><div class="mc-stat-l">Melhor 10%</div></div>
+    <div class="mc-stat"><div class="mc-stat-v" style="color:var(--red)">${(ruin*100).toFixed(1)}%</div><div class="mc-stat-l">Prob. ruína</div></div>
+    <div class="mc-stat"><div class="mc-stat-v" style="color:var(--amber)">${fmtR(s.expectancy*nOps)}</div><div class="mc-stat-l">Esperado</div></div>
+    <div class="mc-stat"><div class="mc-stat-v" style="color:var(--blue)">${nSims}</div><div class="mc-stat-l">Simulações</div></div>`;
+
+  // percentile paths
+  const opsLabels=Array(nOps+1).fill(0).map((_,i)=>i===0?'0':i%10===0?String(i):'');
+  // compute p10/p50/p90 at each step
+  const nSims2=Math.min(500,nSims);
+  const allPaths=[];
+  for(let sim=0;sim<nSims2;sim++){
+    let r=0; const path=[0];
+    for(let op=0;op<nOps;op++){r+=results[Math.floor(Math.random()*results.length)];path.push(r);}
+    allPaths.push(path);
+  }
+  const pctPath=(pct)=>Array(nOps+1).fill(0).map((_,i)=>{const vals=allPaths.map(p=>p[i]).sort((a,b)=>a-b);return vals[Math.floor(vals.length*pct)]||0;});
+  const p10path=pctPath(0.1),p50path=pctPath(0.5),p90path=pctPath(0.9);
+
+  if(charts.mc) charts.mc.destroy();
+  if(charts.mcDist) charts.mcDist.destroy();
+
+  charts.mc=new Chart(document.getElementById('mc-chart'),{
+    type:'line',
+    data:{labels:opsLabels,datasets:[
+      ...paths.slice(0,30).map(p=>({data:p,borderColor:'rgba(42,120,214,.12)',borderWidth:1,pointRadius:0,fill:false})),
+      {data:p10path,borderColor:'rgba(227,73,72,.8)',borderWidth:2,pointRadius:0,fill:false,borderDash:[4,3]},
+      {data:p50path,borderColor:'rgba(237,161,0,.9)',borderWidth:2.5,pointRadius:0,fill:false},
+      {data:p90path,borderColor:'rgba(27,175,122,.8)',borderWidth:2,pointRadius:0,fill:false,borderDash:[4,3]},
+    ]},
+    options:{...baseOpts,animation:false,scales:{x:{grid:{color:GRID},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v).toLocaleString('pt-BR')}}}}
+  });
+
+  // distribution of finals
+  const fmin=finals[0],fmax=finals[finals.length-1],fbins=24,fbsz=(fmax-fmin)/fbins||1;
+  const fcounts=Array(fbins).fill(0);
+  finals.forEach(f=>{const idx=Math.min(Math.floor((f-fmin)/fbsz),fbins-1);fcounts[idx]++;});
+  const fLabels=Array(fbins).fill(0).map((_,i)=>Math.round(fmin+i*fbsz));
+  charts.mcDist=new Chart(document.getElementById('mc-dist-chart'),{type:'bar',data:{labels:fLabels,datasets:[{data:fcounts,backgroundColor:fLabels.map(l=>l>=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK,maxRotation:45,autoSkip:true,maxTicksLimit:8,callback:(_,i)=>'R$'+Math.round(fLabels[i]).toLocaleString('pt-BR')}},y:{grid:{color:GRID},ticks:{color:TICK}}}}});
+}
+
+// ─── Table ────────────────────────────────────────────
+function renderTable(){
+  const start=(currentPage-1)*PAGE_SIZE;
+  const page=filteredTrades.slice(start,start+PAGE_SIZE);
+  const total=Math.ceil(filteredTrades.length/PAGE_SIZE);
+  document.getElementById('table-info').textContent=`${filteredTrades.length} operações`;
+  document.getElementById('page-info').textContent=`${currentPage} / ${Math.max(1,total)}`;
+  document.getElementById('prev-btn').disabled=currentPage===1;
+  document.getElementById('next-btn').disabled=currentPage>=total;
+  document.getElementById('trades-body').innerHTML=page.map(t=>{
+    const rb=`<span class="badge ${t.resultado>0?'g':'r'}">${t.resultado>0?'+':''}${fmtR(t.resultado).replace('R$ ','')}</span>`;
+    const st=t.streak>1?`<span style="color:var(--green);font-size:10px">▲${t.streak}</span>`:t.streak<-1?`<span style="color:var(--red);font-size:10px">▼${Math.abs(t.streak)}</span>`:'—';
+    return `<tr><td style="color:var(--tx3)">${t.num}</td><td><strong>${t.ativo}</strong></td><td style="color:var(--tx2);font-size:11px">${t.dateStr||'—'} ${t.hour!==null?t.hour+'h':''}</td><td style="color:var(--tx3);font-size:11px">${t.tempo||'—'}</td><td><span class="badge ${t.lado==='C'?'g':'a'}">${t.lado||'—'}</span></td><td style="color:var(--tx2)">${t.qtd||'—'}</td><td>${rb}</td><td style="color:var(--green);font-size:11px">${t.mep!==null?fmtR(t.mep):'—'}</td><td style="color:var(--red);font-size:11px">${t.men!==null?fmtR(t.men):'—'}</td><td style="color:var(--red);font-size:11px">${t.drawdown!==null?fmtR(t.drawdown):'—'}</td><td>${st}</td></tr>`;
+  }).join('');
+}
+function filterTable(){
+  const q=document.getElementById('search-input').value.toLowerCase();
+  const side=document.getElementById('side-filter').value;
+  const res=document.getElementById('result-filter').value;
+  filteredTrades=allTrades.filter(t=>{
+    const mq=!q||t.ativo.toLowerCase().includes(q)||t.dateStr.includes(q);
+    const ms=!side||t.lado===side;
+    const mr=!res||(res==='win'&&t.resultado>0)||(res==='loss'&&t.resultado<0);
+    return mq&&ms&&mr;
+  });
+  currentPage=1; renderTable();
+}
+function changePage(dir){
+  const tot=Math.ceil(filteredTrades.length/PAGE_SIZE);
+  currentPage=Math.max(1,Math.min(tot,currentPage+dir));
+  renderTable();
+}
+
+// ─── Main flow ────────────────────────────────────────
+function processFile(text){
+  const parsed=parseProfitCSV(text);
+  if(!parsed){document.getElementById('error-msg').style.display='block';return;}
+  document.getElementById('error-msg').style.display='none';
+  const{trades,meta}=parsed;
+  allTrades=trades; filteredTrades=[...trades];
+  if(meta.di||meta.df){const pb=document.getElementById('period-badge');pb.textContent=(meta.di||'')+(meta.df?' → '+meta.df:'');pb.style.display='';}
+  document.getElementById('reset-btn').style.display='';
+  document.getElementById('table-count').textContent=`(${trades.length} operações)`;
+  const s=computeStats(trades);
+  statsCache=s;
+  document.getElementById('upload-screen').style.display='none';
+  document.getElementById('dashboard').style.display='block';
+  renderAlerts(buildAlerts(s));
+  renderKPIs(s);
+  renderQuant(s);
+  renderCapital(s);
+  renderCharts(s);
+  renderTable();
+}
+function resetApp(){
+  destroyCharts(); allTrades=[]; filteredTrades=[]; currentPage=1; statsCache=null;
+  document.getElementById('upload-screen').style.display='flex';
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('period-badge').style.display='none';
+  document.getElementById('reset-btn').style.display='none';
+  document.getElementById('file-input').value='';
+  switchTab('visao');
+}
+
+// File handling
+document.getElementById('file-input').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=ev=>processFile(ev.target.result); r.readAsText(f,'ISO-8859-1');
+});
+const dz=document.getElementById('drop-zone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{
+  e.preventDefault(); dz.classList.remove('drag');
+  const f=e.dataTransfer.files[0];
+  if(f){const r=new FileReader();r.onload=ev=>processFile(ev.target.result);r.readAsText(f,'ISO-8859-1');}
+});
+</script>
+</body>
+</html>
