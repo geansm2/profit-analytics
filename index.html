@@ -171,6 +171,7 @@ tbody td{padding:8px 12px;white-space:nowrap}
       </div>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
+      <span class="period-badge" id="format-badge" style="display:none"></span>
       <span class="period-badge" id="period-badge" style="display:none"></span>
       <button class="reset-btn" id="reset-btn" style="display:none" onclick="resetApp()">↩ Novo arquivo</button>
     </div>
@@ -186,12 +187,16 @@ tbody td{padding:8px 12px;white-space:nowrap}
         <input type="file" id="file-input" accept=".csv,.txt">
         <div class="drop-label">Arraste o arquivo <strong>.csv</strong> aqui<br>ou clique para selecionar</div>
       </div>
-      <div class="upload-hint">Colunas obrigatória: <code>Res. Operação</code> · todas as demais são opcionais</div>
-      <div class="col-list">
-        <span class="col-tag">Ativo</span><span class="col-tag">Abertura</span><span class="col-tag">Fechamento</span>
-        <span class="col-tag">Lado</span><span class="col-tag">Qtd Compra</span><span class="col-tag">Res. Operação</span>
-        <span class="col-tag">Drawdown</span><span class="col-tag">MEP</span><span class="col-tag">MEN</span>
-        <span class="col-tag">Ganho Max.</span><span class="col-tag">Perda Max.</span><span class="col-tag">Total</span>
+      <div class="upload-hint">Detecta automaticamente o formato exportado — sem configuração necessária</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;text-align:left">
+        <div style="background:var(--s2);border:1px solid var(--gbrd);border-radius:8px;padding:12px">
+          <div style="font-size:10px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Relatório de Trading</div>
+          <div style="font-size:11px;color:var(--tx3);line-height:1.5">Relatórios → Trading<br>Coluna obrigatória: <code>Res. Operação</code></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--bbrd);border-radius:8px;padding:12px">
+          <div style="font-size:10px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Lista de Ordens</div>
+          <div style="font-size:11px;color:var(--tx3);line-height:1.5">Relatórios → Lista de Ordens<br>Trades reconstruídos por posição líquida</div>
+        </div>
       </div>
       <div class="error-msg" id="error-msg">Não foi possível ler o arquivo. Verifique se é um CSV exportado pelo Profit Pro com a coluna <strong>Res. Operação</strong>.</div>
     </div>
@@ -409,15 +414,37 @@ document.addEventListener('click',e=>{
 
 // ─── Parse ────────────────────────────────────────────
 function parseBRL(s){
-  if(!s||s.trim()==='-'||s.trim()===' - ') return null;
+  if(!s||s.trim()==='-'||s.trim()===' - '||s.trim()==='') return null;
   return parseFloat(s.trim().replace(/\./g,'').replace(',','.'));
 }
 
-function parseProfitCSV(text){
-  const lines=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+// Detect which Profit Pro export format this is:
+// FORMAT A: Relatório de Trading  → has 'Res. Operação' column, header after metadata rows
+// FORMAT B: Lista de Ordens       → has 'Status' + 'Criação' + 'Preço Médio' columns, header on line 1
+function detectFormat(lines){
+  // Format B: first data line (line 1) contains 'Status' and 'Criação' and 'Preço Médio'
+  if(lines[1] && lines[1].includes('Status') && lines[1].includes('Criação') && lines[1].includes('Preço Médio'))
+    return 'B';
+  // Format A: search for header with 'Res. Operação' in first 20 lines
+  for(let i=0;i<Math.min(20,lines.length);i++){
+    if(lines[i].includes('Res. Operação') && lines[i].includes(';')) return 'A';
+  }
+  // Fallback: if has 'Ativo' and 'Lado' assume B
+  if(lines[1] && lines[1].includes('Ativo') && lines[1].includes('Lado')) return 'B';
+  return 'A';
+}
+
+// ── FORMAT A: Relatório de Trading ────────────────────
+function parseFormatA(lines){
   let headerIdx=-1;
   for(let i=0;i<Math.min(20,lines.length);i++){
-    if(lines[i].includes('Ativo')&&lines[i].includes(';')){headerIdx=i;break;}
+    if(lines[i].includes('Ativo')&&lines[i].includes(';')&&lines[i].includes('Res. Operação')){headerIdx=i;break;}
+  }
+  // fallback: any line with Ativo + semicolons
+  if(headerIdx<0){
+    for(let i=0;i<Math.min(20,lines.length);i++){
+      if(lines[i].includes('Ativo')&&lines[i].includes(';')){headerIdx=i;break;}
+    }
   }
   if(headerIdx<0) return null;
   const meta={};
@@ -454,7 +481,6 @@ function parseProfitCSV(text){
       const m=raw.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})/);
       if(m){dateObj=new Date(+m[3],+m[2]-1,+m[1],+m[4],+m[5]);dateStr=`${m[1]}/${m[2]}/${m[3]}`;hour=+m[4];}
     }
-    // parse tempo to seconds
     let tempoSec=null;
     const ts=g(C.tempo);
     if(ts&&ts!=='-'){
@@ -478,7 +504,151 @@ function parseProfitCSV(text){
     });
   }
   if(trades.length<3) return null;
-  // streaks
+  addStreaks(trades);
+  return{trades,meta,format:'A',formatLabel:'Relatório de Trading'};
+}
+
+// ── FORMAT B: Lista de Ordens ─────────────────────────
+// Reconstructs trades from raw executed orders using net position tracking.
+// Logic: +C adds to long (or closes short), +V adds to short (or closes long).
+// When net position crosses zero → trade closes. Reversal → close + reopen.
+// Fill price = 'Preço Médio' (avg execution price in index points).
+// P&L = (exit_avg - entry_avg) * net_qty * point_value
+function parseFormatB(lines){
+  const hdrs=lines[1].split(';').map(h=>h.trim());
+  const col=name=>hdrs.findIndex(h=>h===name);
+  const C={
+    ativo:col('Ativo'),lado:col('Lado'),status:col('Status'),
+    criacao:col('Criação'),pmedio:col('Preço Médio'),
+    qtdexec:col('Qtd Executada'),corretora:col('Corretora')
+  };
+  if(C.status<0||C.pmedio<0||C.qtdexec<0) return null;
+
+  // Extract period from line 0 (format: hash,DD/MM/YYYY,DD/MM/YYYY)
+  const meta={};
+  const periodMatch=lines[0]&&lines[0].match(/(\d{2}\/\d{2}\/\d{4}),(\d{2}\/\d{2}\/\d{4})/);
+  if(periodMatch){meta.di=periodMatch[1];meta.df=periodMatch[2];}
+
+  const POINT_VALUE={'WIN':0.20,'WDO':10.0};
+  const FD=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+
+  // Parse all executed orders
+  const orders=[];
+  for(let i=2;i<lines.length;i++){
+    const l=lines[i].trim(); if(!l) continue;
+    const cs=l.split(';');
+    if(cs.length<=C.pmedio) continue;
+    if((cs[C.status]||'').trim()!=='Executada') continue;
+    const raw=(cs[C.criacao]||'').trim();
+    const dm=raw.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
+    if(!dm) continue;
+    const dt=new Date(+dm[3],+dm[2]-1,+dm[1],+dm[4],+dm[5],+dm[6]);
+    const qtd=parseInt(parseBRL(cs[C.qtdexec])||0);
+    const fill=parseBRL(cs[C.pmedio]); // index points, real execution avg price
+    if(!qtd||!fill) continue;
+    const ativo=(cs[C.ativo]||'').trim();
+    // strip contract month code to get base symbol (WINM26 → WIN)
+    const sym=ativo.replace(/[A-Z]\d+$/,'');
+    orders.push({
+      dt,ativo,sym,lado:(cs[C.lado]||'').trim(),fill,qtd,
+      dateStr:`${dm[1]}/${dm[2]}/${dm[3]}`,
+      hour:+dm[4],
+      dow:dt.getDay(),
+      dowName:FD[dt.getDay()],
+      dayKey:`${dm[3]}-${dm[2]}-${dm[1]}-${ativo}`
+    });
+  }
+  if(orders.length<2) return null;
+  orders.sort((a,b)=>a.dt-b.dt);
+
+  // Group by (ativo, calendar day) and reconstruct trades per group
+  const groups={};
+  for(const o of orders){
+    const key=o.dayKey;
+    if(!groups[key]) groups[key]=[];
+    groups[key].push(o);
+  }
+
+  const trades=[];
+  let tradeNum=1;
+  for(const key of Object.keys(groups).sort()){
+    const ords=groups[key];
+    const pv=POINT_VALUE[ords[0].sym]||0.20;
+    let pos=0,cost=0.0,tradeStart=null,tradeClose=null,tradeMaxPos=0,tradeSide='';
+
+    for(const o of ords){
+      const signed=o['lado']==='C'?o.qtd:-o.qtd;
+
+      if(pos===0){
+        // Open new position
+        tradeStart=o; cost=signed*o.fill; pos=signed;
+        tradeMaxPos=Math.abs(pos); tradeSide=o.lado;
+      } else if((pos>0&&signed>0)||(pos<0&&signed<0)){
+        // Add to existing position (pyramid)
+        cost+=signed*o.fill; pos+=signed;
+        tradeMaxPos=Math.max(tradeMaxPos,Math.abs(pos));
+      } else {
+        // Opposing order — partial close, full close, or reversal
+        const newPos=pos+signed;
+        const avgEntry=cost/pos;
+
+        if(newPos===0){
+          // Full close
+          const pnl=(o.fill-avgEntry)*pos*pv;
+          trades.push(makeTrade(tradeNum++,tradeStart,o,pnl,tradeMaxPos,FD));
+          pos=0; cost=0.0; tradeStart=null; tradeMaxPos=0;
+        } else if((pos>0&&newPos<0)||(pos<0&&newPos>0)){
+          // Reversal: close current, open opposite with remainder
+          const pnl=(o.fill-avgEntry)*pos*pv;
+          trades.push(makeTrade(tradeNum++,tradeStart,o,pnl,tradeMaxPos,FD));
+          pos=newPos; cost=newPos*o.fill;
+          tradeStart=o; tradeMaxPos=Math.abs(pos);
+        } else {
+          // Partial close: update cost basis proportionally, keep position open
+          cost=(cost/pos)*newPos;
+          pos=newPos;
+        }
+      }
+    }
+    // If position still open at EOD (shouldn't happen in DayTrade, but handle it)
+    if(pos!==0&&tradeStart){
+      const avgEntry=cost/pos;
+      const lastO=ords[ords.length-1];
+      const pnl=0; // mark as open / unknown result
+      trades.push(makeTrade(tradeNum++,tradeStart,lastO,pnl,tradeMaxPos,FD,true));
+    }
+  }
+
+  if(trades.length<3) return null;
+  addStreaks(trades);
+  return{trades,meta,format:'B',formatLabel:'Lista de Ordens (reconstruído)'};
+}
+
+function makeTrade(num,openOrd,closeOrd,pnl,maxPos,FD,open=false){
+  const dt=openOrd.dt;
+  const dtClose=closeOrd.dt;
+  const durMs=dtClose-dt;
+  const durMin=Math.round(durMs/60000);
+  const hh=String(Math.floor(durMin/60)).padStart(2,'0');
+  const mm=String(durMin%60).padStart(2,'0');
+  return{
+    num,
+    ativo:openOrd.ativo,
+    abertura:openOrd.dateStr+' '+String(openOrd.hour).padStart(2,'0')+'h',
+    fechamento:closeOrd.dateStr+' '+String(closeOrd.hour).padStart(2,'0')+'h',
+    tempo:`${hh}h${mm}min`,
+    tempoSec:Math.round(durMs/1000),
+    lado:openOrd.lado,
+    qtd:maxPos,
+    resultado:Math.round(pnl*100)/100,
+    mep:null,men:null,drawdown:null,ganhoMax:null,perdaMax:null,
+    dateObj:dt,dateStr:openOrd.dateStr,hour:openOrd.hour,
+    dow:dt.getDay(),dowName:FD[dt.getDay()],
+    streak:0,open
+  };
+}
+
+function addStreaks(trades){
   let streak=0,lastSign=0;
   for(const t of trades){
     const sign=t.resultado>0?1:t.resultado<0?-1:0;
@@ -486,7 +656,13 @@ function parseProfitCSV(text){
     streak=sign===lastSign?streak+sign:sign;
     lastSign=sign; t.streak=streak;
   }
-  return{trades,meta};
+}
+
+// ── Main entry point ──────────────────────────────────
+function parseProfitCSV(text){
+  const lines=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+  const fmt=detectFormat(lines);
+  return fmt==='B'?parseFormatB(lines):parseFormatA(lines);
 }
 
 // ─── Stats ────────────────────────────────────────────
@@ -870,13 +1046,27 @@ function processFile(text){
   const parsed=parseProfitCSV(text);
   if(!parsed){document.getElementById('error-msg').style.display='block';return;}
   document.getElementById('error-msg').style.display='none';
-  const{trades,meta}=parsed;
+  const{trades,meta,format,formatLabel}=parsed;
   allTrades=trades; filteredTrades=[...trades];
+
+  // Format badge
+  const fb=document.getElementById('format-badge');
+  fb.textContent=formatLabel||'Relatório de Trading';
+  fb.style.background=format==='B'?'var(--bdim)':'var(--gdim)';
+  fb.style.borderColor=format==='B'?'var(--bbrd)':'var(--gbrd)';
+  fb.style.color=format==='B'?'#70abee':'#5dd4a8';
+  fb.style.display='';
+
   if(meta.di||meta.df){const pb=document.getElementById('period-badge');pb.textContent=(meta.di||'')+(meta.df?' → '+meta.df:'');pb.style.display='';}
   document.getElementById('reset-btn').style.display='';
   document.getElementById('table-count').textContent=`(${trades.length} operações)`;
   const s=computeStats(trades);
   statsCache=s;
+
+  // Show/hide MEP/MEN note for format B
+  const mepNote=document.getElementById('mep-men-note');
+  if(mepNote) mepNote.style.display=format==='B'?'block':'none';
+
   document.getElementById('upload-screen').style.display='none';
   document.getElementById('dashboard').style.display='block';
   renderAlerts(buildAlerts(s));
@@ -891,6 +1081,7 @@ function resetApp(){
   document.getElementById('upload-screen').style.display='flex';
   document.getElementById('dashboard').style.display='none';
   document.getElementById('period-badge').style.display='none';
+  document.getElementById('format-badge').style.display='none';
   document.getElementById('reset-btn').style.display='none';
   document.getElementById('file-input').value='';
   switchTab('visao');
