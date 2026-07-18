@@ -70,7 +70,7 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,'Segoe UI',s
 .chart-card{background:var(--surface);border:1px solid var(--brd);border-radius:var(--r);padding:16px}
 .chart-title{font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px}
 .chart-wrap{position:relative}
-.h160{height:160px} .h180{height:180px} .h220{height:220px} .h260{height:260px}
+.h160{height:160px} .h180{height:180px} .h200{height:200px} .h220{height:220px} .h260{height:260px}
 
 /* Quant cards with tooltip */
 .quant-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
@@ -209,6 +209,7 @@ tbody td{padding:8px 12px;white-space:nowrap}
       <button class="tab active" onclick="switchTab('visao')">Visão Geral</button>
       <button class="tab" onclick="switchTab('risco')">Risco Quantitativo</button>
       <button class="tab" onclick="switchTab('capital')">Capital &amp; Sizing</button>
+      <button class="tab" onclick="switchTab('comportamento')">Comportamento</button>
       <button class="tab" onclick="switchTab('monte')">Monte Carlo</button>
       <button class="tab" onclick="switchTab('ops')">Operações</button>
     </div>
@@ -319,6 +320,96 @@ tbody td{padding:8px 12px;white-space:nowrap}
       </div>
     </div>
 
+    <!-- TAB: Comportamento -->
+    <div class="tab-panel" id="tab-comportamento">
+
+      <div class="section">
+        <div class="sec-hdr">resultado por segmento de horário</div>
+        <div id="seg-insights" class="alerts" style="margin-bottom:12px"></div>
+        <div class="charts-row-3">
+          <div class="chart-card">
+            <div class="chart-title">P&amp;L médio por hora</div>
+            <div class="chart-wrap h180"><canvas id="hora-pnl-chart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Win rate por hora</div>
+            <div class="chart-wrap h180"><canvas id="hora-wr-chart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Segmentos do dia</div>
+            <div class="chart-wrap h180"><canvas id="seg-chart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="sec-hdr">análise por tamanho de posição</div>
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-title">Expectativa por nº de contratos</div>
+            <div class="chart-wrap h200"><canvas id="qtd-exp-chart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Win rate por nº de contratos</div>
+            <div class="chart-wrap h200"><canvas id="qtd-wr-chart"></canvas></div>
+          </div>
+        </div>
+        <div class="quant-grid" style="margin-top:12px" id="qtd-cards"></div>
+      </div>
+
+      <div class="section">
+        <div class="sec-hdr">tempo nas operações</div>
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-title">Duração média — ganhos vs perdas (minutos)</div>
+            <div class="chart-wrap h180"><canvas id="dur-chart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Distribuição de duração</div>
+            <div class="chart-wrap h180"><canvas id="dur-dist-chart"></canvas></div>
+          </div>
+        </div>
+        <div class="quant-grid" style="margin-top:12px" id="dur-cards"></div>
+      </div>
+
+      <div class="section">
+        <div class="sec-hdr">drawdown diário &amp; horário ótimo de parada</div>
+        <div class="chart-card" style="margin-bottom:12px">
+          <div class="chart-title">Drawdown máximo intraday por sessão</div>
+          <div class="chart-wrap h200"><canvas id="dd-dia-chart"></canvas></div>
+        </div>
+        <div class="chart-card" style="margin-bottom:12px">
+          <div class="chart-title">Se você tivesse parado no pico — resultado perdido por continuar operando</div>
+          <div class="chart-wrap h180"><canvas id="peak-chart"></canvas></div>
+        </div>
+        <div style="font-size:12px;color:var(--tx3);padding:12px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--brd);line-height:1.6">
+          <strong style="color:var(--tx2)">Horário ótimo de parada:</strong> mostra o quanto de resultado você "devolveu" ao mercado após atingir o pico do dia. Barras vermelhas = dias onde continuar operando custou resultado positivo acumulado.
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="sec-hdr">análise de recuperação &amp; resiliência</div>
+        <div class="quant-grid" id="recovery-cards"></div>
+        <div class="chart-card" style="margin-top:12px">
+          <div class="chart-title">Ops necessárias para recuperar cada perda (distribuição)</div>
+          <div class="chart-wrap h180"><canvas id="recovery-chart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="sec-hdr">custo de aumentar a mão</div>
+        <div class="chart-card">
+          <div class="chart-title">Expectativa marginal por contrato adicional — o que cada contrato a mais contribui</div>
+          <div class="chart-wrap h200"><canvas id="marginal-chart"></canvas></div>
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:var(--tx3);padding:12px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--brd);line-height:1.6">
+          <strong style="color:var(--tx2)">Custo de aumentar a mão:</strong> divide a expectativa total de cada grupo pelo número de contratos. Mostra se cada contrato marginal agrega ou destrói valor esperado. Se a curva cair ao adicionar contratos, você está super-alavancado naquele tamanho.
+        </div>
+      </div>
+
+    </div>
+    <!-- /TAB: Comportamento -->
+
     <!-- TAB: Monte Carlo -->
     <div class="tab-panel" id="tab-monte">
       <div class="section">
@@ -391,7 +482,7 @@ let charts={};
 // ─── Tabs ─────────────────────────────────────────────
 function switchTab(id){
   document.querySelectorAll('.tab').forEach((t,i)=>{
-    const ids=['visao','risco','capital','monte','ops'];
+    const ids=['visao','risco','capital','comportamento','monte','ops'];
     t.classList.toggle('active',ids[i]===id);
   });
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+id));
@@ -729,9 +820,100 @@ function computeStats(trades){
   // avg qtd
   const qtds=trades.map(t=>t.qtd).filter(q=>q>0);
   const avgQtd=qtds.length?qtds.reduce((a,b)=>a+b,0)/qtds.length:1;
-  const medQtd=qtds.length?qtds.sort((a,b)=>a-b)[Math.floor(qtds.length/2)]:1;
+  const medQtd=qtds.length?[...qtds].sort((a,b)=>a-b)[Math.floor(qtds.length/2)]:1;
   const maxQtd=qtds.length?Math.max(...qtds):1;
-  return{n,wins:wins.length,losses:losses.length,winRate,avgWin,avgLoss,totalPnl,expectancy,mean,stdDev,kelly,kellyQ,var95,var99,cvar95,maxDD,profitFactor,sharpe,equity,ddSeries,results,dayStats,hourStats,postLossWR,postWinWR,symStats,maxWinSeq:maxWS,maxLossSeq:maxLS,grossW,grossL,mepEff,menEff,avgQtd,medQtd,maxQtd,trades};
+
+  // ── NEW: hourly breakdown ─────────────────────────────
+  const hourDetail={};
+  trades.forEach(t=>{
+    const h=t.hour;
+    if(h===null||h===undefined) return;
+    if(!hourDetail[h]) hourDetail[h]={sum:0,wins:0,n:0};
+    hourDetail[h].sum+=t.resultado; hourDetail[h].n++;
+    if(t.resultado>0) hourDetail[h].wins++;
+  });
+
+  // ── NEW: time segments ────────────────────────────────
+  const segs={
+    manha:   {label:'Manhã (9h–11h)',   filter:t=>t.hour>=9&&t.hour<11},
+    meio:    {label:'Meio-dia (11h–13h)',filter:t=>t.hour>=11&&t.hour<13},
+    almoco:  {label:'Almoço (13h–14h)', filter:t=>t.hour>=13&&t.hour<14},
+    tarde:   {label:'Tarde (14h–18h)',  filter:t=>t.hour>=14},
+  };
+  const segStats={};
+  for(const [k,s] of Object.entries(segs)){
+    const ts=trades.filter(s.filter);
+    const rs=ts.map(t=>t.resultado);
+    const ws=rs.filter(r=>r>0);
+    segStats[k]={label:s.label,n:ts.length,sum:rs.reduce((a,b)=>a+b,0),
+      wins:ws.length,avg:rs.length?rs.reduce((a,b)=>a+b,0)/rs.length:0,
+      wr:rs.length?ws.length/rs.length:0};
+  }
+
+  // ── NEW: by contract size ─────────────────────────────
+  const byQtd={};
+  trades.forEach(t=>{
+    const q=t.qtd;
+    if(!byQtd[q]) byQtd[q]={sum:0,wins:0,n:0};
+    byQtd[q].sum+=t.resultado; byQtd[q].n++;
+    if(t.resultado>0) byQtd[q].wins++;
+  });
+  const qtdStats=Object.entries(byQtd).map(([q,s])=>({
+    qtd:+q,n:s.n,sum:s.sum,wins:s.wins,
+    avg:s.sum/s.n,wr:s.wins/s.n,
+    perContract:s.sum/s.n/(+q)
+  })).sort((a,b)=>a.qtd-b.qtd);
+
+  // ── NEW: duration analysis ────────────────────────────
+  const durWins=trades.filter(t=>t.resultado>0&&t.durSec!=null).map(t=>t.durSec/60);
+  const durLoss=trades.filter(t=>t.resultado<0&&t.durSec!=null).map(t=>t.durSec/60);
+  const avgDurWin=durWins.length?durWins.reduce((a,b)=>a+b,0)/durWins.length:0;
+  const avgDurLoss=durLoss.length?durLoss.reduce((a,b)=>a+b,0)/durLoss.length:0;
+  const medDurWin=durWins.length?[...durWins].sort((a,b)=>a-b)[Math.floor(durWins.length/2)]:0;
+  const medDurLoss=durLoss.length?[...durLoss].sort((a,b)=>a-b)[Math.floor(durLoss.length/2)]:0;
+
+  // ── NEW: per-day drawdown + peak analysis ─────────────
+  const byDay={};
+  trades.forEach(t=>{
+    const k=t.dateStr||t.dateObj?.toLocaleDateString('pt-BR')||'?';
+    if(!byDay[k]) byDay[k]=[];
+    byDay[k].push(t);
+  });
+  const dayDetail=Object.entries(byDay).map(([date,ts])=>{
+    const sorted=[...ts].sort((a,b)=>a.dt-b.dt);
+    let run=0,peak2=0,maxdd=0,bestVal=0,bestAfter=0;
+    sorted.forEach(t=>{
+      run+=t.resultado;
+      if(run>peak2) peak2=run;
+      maxdd=Math.max(maxdd,peak2-run);
+      if(run>bestVal) bestVal=run;
+    });
+    bestAfter=bestVal-run; // how much given back after peak
+    const rs=sorted.map(t=>t.resultado);
+    const ws=rs.filter(r=>r>0);
+    return{date,n:sorted.length,sum:run,maxDD:maxdd,bestVal,bestAfter,
+           wins:ws.length,wr:ws.length/sorted.length};
+  }).sort((a,b)=>a.date.localeCompare(b.date));
+
+  // ── NEW: recovery analysis ────────────────────────────
+  const recoveryTimes=[];
+  for(let i=0;i<results.length;i++){
+    if(results[i]<0){
+      const lossAbs=Math.abs(results[i]);
+      let cum=0,found=false;
+      for(let j=i+1;j<results.length;j++){
+        cum+=results[j];
+        if(cum>=lossAbs){recoveryTimes.push(j-i);found=true;break;}
+      }
+      if(!found) recoveryTimes.push(results.length-i); // still recovering
+    }
+  }
+  const avgRecovery=recoveryTimes.length?recoveryTimes.reduce((a,b)=>a+b,0)/recoveryTimes.length:0;
+  const maxRecovery=recoveryTimes.length?Math.max(...recoveryTimes):0;
+  const pct50Recovery=recoveryTimes.length?[...recoveryTimes].sort((a,b)=>a-b)[Math.floor(recoveryTimes.length*0.5)]:0;
+
+  return{n,wins:wins.length,losses:losses.length,winRate,avgWin,avgLoss,totalPnl,expectancy,mean,stdDev,kelly,kellyQ,var95,var99,cvar95,maxDD,profitFactor,sharpe,equity,ddSeries,results,dayStats,hourStats,postLossWR,postWinWR,symStats,maxWinSeq:maxWS,maxLossSeq:maxLS,grossW,grossL,mepEff,menEff,avgQtd,medQtd,maxQtd,trades,
+    hourDetail,segStats,qtdStats,avgDurWin,avgDurLoss,medDurWin,medDurLoss,dayDetail,recoveryTimes,avgRecovery,maxRecovery,pct50Recovery};
 }
 
 // ─── Helpers ──────────────────────────────────────────
@@ -942,6 +1124,180 @@ function renderCharts(s){
   charts.sizing=new Chart(document.getElementById('sizing-chart'),{type:'bar',data:{labels:contracts.map(c=>c+'x'),datasets:[{data:sizingData,backgroundColor:sizingData.map(v=>v>=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v.toLocaleString('pt-BR')}}}}});
 }
 
+// ─── Behavior Tab ─────────────────────────────────────
+function renderBehavior(s){
+  const fmtMin=m=>`${Math.floor(m)}min${Math.round((m%1)*60).toString().padStart(2,'0')}s`;
+
+  // Segment insights
+  const segInsights=document.getElementById('seg-insights');
+  const bestSeg=Object.values(s.segStats).filter(x=>x.n>2).reduce((a,b)=>b.avg>a.avg?b:a,{avg:-Infinity,label:'?'});
+  const worstSeg=Object.values(s.segStats).filter(x=>x.n>2).reduce((a,b)=>b.avg<a.avg?b:a,{avg:Infinity,label:'?'});
+  segInsights.innerHTML=`
+    <div class="alert ok"><span class="alert-icon">⏰</span><div><span class="alert-title">Melhor período: ${bestSeg.label}</span><span class="alert-msg">${bestSeg.n} operações · WR ${(bestSeg.wr*100).toFixed(0)}% · média ${fmtR(bestSeg.avg)}/op · total ${fmtR(bestSeg.sum)}</span></div></div>
+    <div class="alert ${worstSeg.avg<0?'crit':'warn'}"><span class="alert-icon">⚠️</span><div><span class="alert-title">Pior período: ${worstSeg.label}</span><span class="alert-msg">${worstSeg.n} operações · WR ${(worstSeg.wr*100).toFixed(0)}% · média ${fmtR(worstSeg.avg)}/op · total ${fmtR(worstSeg.sum)}</span></div></div>
+    ${s.avgDurLoss>s.avgDurWin*1.3?`<div class="alert warn"><span class="alert-icon">⏱️</span><div><span class="alert-title">Você segura o prejuízo ${((s.avgDurLoss/s.avgDurWin-1)*100).toFixed(0)}% mais tempo que o ganho</span><span class="alert-msg">Ganhos: ${fmtMin(s.avgDurWin)} · Perdas: ${fmtMin(s.avgDurLoss)}. Clássico sinal de relutância em aceitar stop.</span></div></div>`:''}
+  `;
+
+  // Hour PnL chart
+  const hEntries=Object.entries(s.hourDetail).sort((a,b)=>+a[0]-+b[0]);
+  const hLabels=hEntries.map(([h])=>h+'h');
+  const hAvgs=hEntries.map(([,v])=>+(v.sum/v.n).toFixed(0));
+  const hWRs=hEntries.map(([,v])=>+(v.wins/v.n*100).toFixed(1));
+
+  if(charts.horaPnl) charts.horaPnl.destroy();
+  charts.horaPnl=new Chart(document.getElementById('hora-pnl-chart'),{type:'bar',
+    data:{labels:hLabels,datasets:[{data:hAvgs,backgroundColor:hAvgs.map(v=>v>=0?GC:RC)}]},
+    options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
+
+  if(charts.horaWR) charts.horaWR.destroy();
+  charts.horaWR=new Chart(document.getElementById('hora-wr-chart'),{type:'bar',
+    data:{labels:hLabels,datasets:[{data:hWRs,backgroundColor:hWRs.map(v=>v>=50?BC:AC)}]},
+    options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'%'},min:0,max:100}}}});
+
+  // Segments chart
+  const segLabels=['Manhã\n9-11h','Meio-dia\n11-13h','Almoço\n13-14h','Tarde\n14-18h'];
+  const segKeys=['manha','meio','almoco','tarde'];
+  const segAvgs=segKeys.map(k=>+(s.segStats[k]?.avg||0).toFixed(0));
+  if(charts.seg) charts.seg.destroy();
+  charts.seg=new Chart(document.getElementById('seg-chart'),{type:'bar',
+    data:{labels:segLabels,datasets:[{data:segAvgs,backgroundColor:segAvgs.map(v=>v>=0?GC:RC)}]},
+    options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
+
+  // Contract size: expectancy chart
+  const qtdLabels=s.qtdStats.map(q=>q.qtd+'x');
+  const qtdAvgs=s.qtdStats.map(q=>Math.round(q.avg));
+  const qtdWRs=s.qtdStats.map(q=>+(q.wr*100).toFixed(1));
+  if(charts.qtdExp) charts.qtdExp.destroy();
+  charts.qtdExp=new Chart(document.getElementById('qtd-exp-chart'),{type:'bar',
+    data:{labels:qtdLabels,datasets:[{data:qtdAvgs,backgroundColor:qtdAvgs.map(v=>v>=0?GC:RC),label:'Expectativa'}]},
+    options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`R$${c.raw} (${s.qtdStats[c.dataIndex].n} ops)`}}},
+      scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
+
+  if(charts.qtdWR) charts.qtdWR.destroy();
+  charts.qtdWR=new Chart(document.getElementById('qtd-wr-chart'),{type:'bar',
+    data:{labels:qtdLabels,datasets:[{data:qtdWRs,backgroundColor:qtdWRs.map(v=>v>=50?BC:AC)}]},
+    options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'%'},min:0,max:100}}}});
+
+  // Contract size cards (top 5 by frequency)
+  const top5=s.qtdStats.sort((a,b)=>b.n-a.n).slice(0,6);
+  document.getElementById('qtd-cards').innerHTML=top5.map(q=>`
+    <div class="qcard ${q.avg>0?'g':'r'}">
+      <div class="qcard-lbl">${q.qtd} contrato${q.qtd>1?'s':''}</div>
+      <div class="qcard-val">${fmtR(q.avg)}/op</div>
+      <div class="qcard-sub">${q.n} ops · WR ${(q.wr*100).toFixed(0)}% · ${fmtR(q.perContract)}/contrato</div>
+      <div class="qcard-formula">total ${fmtR(q.sum)}</div>
+    </div>`).join('');
+
+  // Duration charts
+  const allDurs=[...s.trades.filter(t=>t.durSec!=null)].map(t=>({dur:t.durSec/60,win:t.resultado>0}));
+  if(charts.dur) charts.dur.destroy();
+  charts.dur=new Chart(document.getElementById('dur-chart'),{type:'bar',
+    data:{labels:['Duração média','Duração mediana'],
+      datasets:[
+        {label:'Ganhos',data:[+s.avgDurWin.toFixed(1),+s.medDurWin.toFixed(1)],backgroundColor:GC},
+        {label:'Perdas',data:[+s.avgDurLoss.toFixed(1),+s.medDurLoss.toFixed(1)],backgroundColor:RC}
+      ]},
+    options:{...baseOpts,plugins:{legend:{display:true,labels:{color:TICK}}},
+      scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'min'}}}}});
+
+  // Duration distribution histogram
+  const maxDur=Math.min(120,Math.max(...allDurs.map(d=>d.dur)));
+  const durBins=12; const durBsz=maxDur/durBins;
+  const wBins=Array(durBins).fill(0),lBins=Array(durBins).fill(0);
+  allDurs.forEach(({dur,win})=>{const i=Math.min(Math.floor(dur/durBsz),durBins-1);win?wBins[i]++:lBins[i]++;});
+  const durBinLabels=Array(durBins).fill(0).map((_,i)=>Math.round(i*durBsz)+'min');
+  if(charts.durDist) charts.durDist.destroy();
+  charts.durDist=new Chart(document.getElementById('dur-dist-chart'),{type:'bar',
+    data:{labels:durBinLabels,datasets:[
+      {label:'Ganhos',data:wBins,backgroundColor:'rgba(27,175,122,.6)'},
+      {label:'Perdas',data:lBins,backgroundColor:'rgba(227,73,72,.6)'}
+    ]},
+    options:{...baseOpts,plugins:{legend:{display:true,labels:{color:TICK}}},
+      scales:{x:{stacked:false,grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK}}}}});
+
+  document.getElementById('dur-cards').innerHTML=`
+    <div class="qcard ${s.avgDurWin<s.avgDurLoss?'r':'g'}">
+      <div class="qcard-lbl">Duração média — ganhos</div>
+      <div class="qcard-val">${fmtMin(s.avgDurWin)}</div>
+      <div class="qcard-sub">mediana ${fmtMin(s.medDurWin)}</div>
+    </div>
+    <div class="qcard r">
+      <div class="qcard-lbl">Duração média — perdas</div>
+      <div class="qcard-val">${fmtMin(s.avgDurLoss)}</div>
+      <div class="qcard-sub">mediana ${fmtMin(s.medDurLoss)}</div>
+    </div>
+    <div class="qcard ${s.avgDurLoss>s.avgDurWin?'r':'g'}">
+      <div class="qcard-lbl">Ratio duração L/W</div>
+      <div class="qcard-val">${s.avgDurWin>0?(s.avgDurLoss/s.avgDurWin).toFixed(2)+'x':'—'}</div>
+      <div class="qcard-sub">${s.avgDurLoss>s.avgDurWin*1.2?'Você segura perdas muito mais tempo':'Duração equilibrada'}</div>
+    </div>`;
+
+  // Per-day drawdown chart
+  const ddDayLabels=s.dayDetail.map(d=>d.date.slice(0,5));
+  const ddDayVals=s.dayDetail.map(d=>-d.maxDD);
+  const ddDayTot=s.dayDetail.map(d=>d.sum);
+  if(charts.ddDia) charts.ddDia.destroy();
+  charts.ddDia=new Chart(document.getElementById('dd-dia-chart'),{type:'bar',
+    data:{labels:ddDayLabels,datasets:[
+      {label:'P&L do dia',data:ddDayTot,backgroundColor:ddDayTot.map(v=>v>=0?'rgba(27,175,122,.4)':'rgba(227,73,72,.4)'),type:'bar'},
+      {label:'Drawdown máx',data:ddDayVals,backgroundColor:'rgba(227,73,72,.7)',type:'bar'}
+    ]},
+    options:{...baseOpts,plugins:{legend:{display:true,labels:{color:TICK}}},
+      scales:{x:{grid:{display:false},ticks:{color:TICK,maxRotation:45}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v)}}}}});
+
+  // Peak return chart — how much given back after peak
+  const peakLabels=s.dayDetail.map(d=>d.date.slice(0,5));
+  const peakVals=s.dayDetail.map(d=>-d.bestAfter);
+  if(charts.peak) charts.peak.destroy();
+  charts.peak=new Chart(document.getElementById('peak-chart'),{type:'bar',
+    data:{labels:peakLabels,datasets:[{data:peakVals,backgroundColor:peakVals.map(v=>v<0?RC:'rgba(100,100,100,.3)')}]},
+    options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK,maxRotation:45}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v)}}}}});
+
+  // Recovery cards
+  const pct75Rec=s.recoveryTimes.length?[...s.recoveryTimes].sort((a,b)=>a-b)[Math.floor(s.recoveryTimes.length*0.75)]:0;
+  document.getElementById('recovery-cards').innerHTML=`
+    <div class="qcard ${s.avgRecovery<10?'g':'r'} ${tip('Tempo médio de recuperação','Número médio de operações necessárias para recuperar o valor de uma perda individual. Quanto menor, mais resiliente é a estratégia.')}">
+      <div class="qcard-lbl">Recuperação média ${tip('Recuperação média','Operações necessárias em média para recuperar uma perda.')}</div>
+      <div class="qcard-val">${s.avgRecovery.toFixed(1)} ops</div>
+      <div class="qcard-sub">para recuperar uma perda</div>
+    </div>
+    <div class="qcard a">
+      <div class="qcard-lbl">Recuperação mediana</div>
+      <div class="qcard-val">${s.pct50Recovery} ops</div>
+      <div class="qcard-sub">50% das perdas recuperadas até aqui</div>
+    </div>
+    <div class="qcard r">
+      <div class="qcard-lbl">Recuperação p75</div>
+      <div class="qcard-val">${pct75Rec} ops</div>
+      <div class="qcard-sub">75% das perdas recuperadas até aqui</div>
+    </div>
+    <div class="qcard r">
+      <div class="qcard-lbl">Pior recuperação</div>
+      <div class="qcard-val">${s.maxRecovery} ops</div>
+      <div class="qcard-sub">maior seq. necessária</div>
+    </div>`;
+
+  // Recovery distribution
+  const recMax=Math.min(60,s.maxRecovery||60);
+  const recBins=10; const recBsz=Math.max(1,recMax/recBins);
+  const recCounts=Array(recBins).fill(0);
+  s.recoveryTimes.forEach(r=>{const i=Math.min(Math.floor(r/recBsz),recBins-1);recCounts[i]++;});
+  const recLabels=Array(recBins).fill(0).map((_,i)=>Math.round(i*recBsz)+'-'+Math.round((i+1)*recBsz)+'ops');
+  if(charts.recovery) charts.recovery.destroy();
+  charts.recovery=new Chart(document.getElementById('recovery-chart'),{type:'bar',
+    data:{labels:recLabels,datasets:[{data:recCounts,backgroundColor:recLabels.map((_,i)=>i<3?GC:i<6?AC:RC)}]},
+    options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK,maxRotation:45}},y:{grid:{color:GRID},ticks:{color:TICK}}}}});
+
+  // Marginal value per contract
+  const margLabels=s.qtdStats.map(q=>q.qtd+'x');
+  const margVals=s.qtdStats.map(q=>Math.round(q.perContract));
+  if(charts.marginal) charts.marginal.destroy();
+  charts.marginal=new Chart(document.getElementById('marginal-chart'),{type:'bar',
+    data:{labels:margLabels,datasets:[{data:margVals,backgroundColor:margVals.map(v=>v>=0?GC:RC)}]},
+    options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`R$${c.raw}/contrato (${s.qtdStats[c.dataIndex].n} ops, WR ${(s.qtdStats[c.dataIndex].wr*100).toFixed(0)}%)`}}},
+      scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
+}
+
 // ─── Monte Carlo ──────────────────────────────────────
 function runMonteCarlo(){
   if(!statsCache) return;
@@ -1074,6 +1430,7 @@ function processFile(text){
   renderQuant(s);
   renderCapital(s);
   renderCharts(s);
+  renderBehavior(s);
   renderTable();
 }
 function resetApp(){
