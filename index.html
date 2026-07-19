@@ -10,7 +10,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--tx);font-family:-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
-.wrap{max-width:1120px;margin:0 auto;padding:24px 16px 60px}
+.wrap{max-width:1120px;margin:0 auto;padding:24px 16px 40px}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
 .logo{display:flex;align-items:center;gap:10px}
 .logo-mark{width:32px;height:32px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center}
@@ -18,41 +18,47 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,'Segoe UI',s
 .logo-text{font-size:16px;font-weight:600;letter-spacing:-.3px}
 .logo-sub{font-size:11px;color:var(--tx2);margin-top:1px}
 .period-badge{font-size:12px;color:var(--tx2);background:var(--s2);border:1px solid var(--brd2);border-radius:6px;padding:5px 12px}
-.reset-btn{font-size:12px;color:var(--tx3);background:none;border:1px solid var(--brd2);border-radius:6px;padding:5px 12px;cursor:pointer;transition:all .15s}
+.reset-btn{font-size:12px;color:var(--tx3);background:none;border:1px solid var(--brd2);border-radius:6px;padding:5px 12px;cursor:pointer}
 .reset-btn:hover{color:var(--tx2)}
-
 /* Upload */
 #upload-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center}
-.upload-card{background:var(--surface);border:1px solid var(--brd2);border-radius:16px;padding:48px 40px;max-width:480px;width:100%}
+.upload-card{background:var(--surface);border:1px solid var(--brd2);border-radius:16px;padding:48px 40px;max-width:500px;width:100%}
 .upload-icon{width:64px;height:64px;background:var(--s2);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
 .upload-icon svg{width:32px;height:32px;stroke:var(--tx2);fill:none;stroke-width:1.5}
 .upload-title{font-size:20px;font-weight:600;margin-bottom:8px}
-.upload-desc{color:var(--tx2);font-size:13px;margin-bottom:28px;line-height:1.6}
-.drop-zone{border:1.5px dashed var(--brd2);border-radius:12px;padding:32px 20px;cursor:pointer;transition:all .2s;margin-bottom:16px;position:relative}
+.upload-desc{color:var(--tx2);font-size:13px;margin-bottom:20px;line-height:1.6}
+.drop-zone{border:1.5px dashed var(--brd2);border-radius:12px;padding:28px 20px;cursor:pointer;transition:all .2s;margin-bottom:12px;position:relative}
 .drop-zone:hover,.drop-zone.drag{border-color:var(--green);background:var(--gdim)}
 .drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .drop-label{color:var(--tx2);font-size:13px;pointer-events:none}
 .drop-label strong{color:var(--green)}
-.upload-hint{font-size:11px;color:var(--tx3)}
-.col-list{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:12px}
-.col-tag{font-size:10px;background:var(--s3);border:1px solid var(--brd);color:var(--tx2);padding:2px 7px;border-radius:4px;font-family:monospace}
-.error-msg{background:var(--rdim);border:1px solid var(--rbrd);color:#f89190;border-radius:var(--r);padding:14px 16px;font-size:13px;margin-top:12px;display:none}
-
+.upload-hint{font-size:11px;color:var(--tx3);margin-bottom:16px}
+.fmt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;text-align:left}
+.fmt-card{background:var(--s2);border-radius:8px;padding:12px;border:1px solid var(--brd)}
+.fmt-card-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.fmt-card-desc{font-size:11px;color:var(--tx3);line-height:1.5}
+.error-msg{background:var(--rdim);border:1px solid var(--rbrd);color:#f89190;border-radius:var(--r);padding:14px 16px;font-size:13px;margin-top:10px;display:none}
+/* Market data upload */
+.market-upload{background:var(--s2);border:1px solid var(--brd2);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--tx2);display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .15s;margin-bottom:10px}
+.market-upload:hover{border-color:var(--blue);background:var(--bdim);color:var(--tx)}
+.market-upload input{display:none}
+.market-badge{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600;flex-shrink:0}
+.market-badge.ok{background:var(--gdim);color:var(--green);border:1px solid var(--gbrd)}
+.market-badge.pending{background:var(--adim);color:var(--amber);border:1px solid var(--abrd)}
+.market-badge.loading{background:var(--bdim);color:var(--blue);border:1px solid var(--bbrd)}
 /* Dashboard */
 #dashboard{display:none}
 .section{margin-bottom:28px}
 .sec-hdr{font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .sec-hdr::after{content:'';flex:1;height:1px;background:var(--brd)}
-
 /* KPI */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 .kpi{background:var(--surface);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px}
-.kpi-lbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.kpi-lbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;display:flex;align-items:center;gap:5px}
 .kpi-val{font-size:22px;font-weight:600;line-height:1;margin-bottom:4px}
 .kpi-sub{font-size:11px;color:var(--tx2)}
 .kpi.g .kpi-val{color:var(--green)} .kpi.r .kpi-val{color:var(--red)} .kpi.a .kpi-val{color:var(--amber)} .kpi.b .kpi-val{color:var(--blue)}
 .kpi.g{border-color:var(--gbrd)} .kpi.r{border-color:var(--rbrd)}
-
 /* Alerts */
 .alerts{display:flex;flex-direction:column;gap:8px}
 .alert{display:flex;align-items:flex-start;gap:12px;padding:13px 15px;border-radius:var(--r);font-size:13px;line-height:1.55;border:1px solid}
@@ -63,61 +69,61 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,'Segoe UI',s
 .alert.warn{background:var(--adim);border-color:var(--abrd);color:#f5c960}
 .alert.ok{background:var(--gdim);border-color:var(--gbrd);color:#5dd4a8}
 .alert.info{background:var(--bdim);border-color:var(--bbrd);color:#70abee}
-
 /* Charts */
 .charts-row{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.charts-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .charts-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 .chart-card{background:var(--surface);border:1px solid var(--brd);border-radius:var(--r);padding:16px}
 .chart-title{font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px}
 .chart-wrap{position:relative}
-.h160{height:160px} .h180{height:180px} .h200{height:200px} .h220{height:220px} .h260{height:260px}
-
-/* Quant cards with tooltip */
+.h140{height:140px} .h160{height:160px} .h180{height:180px} .h200{height:200px} .h220{height:220px} .h260{height:260px}
+/* Quant cards */
 .quant-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
-.qcard{background:var(--s2);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px;position:relative}
+.qcard{background:var(--s2);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px}
 .qcard-lbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;display:flex;align-items:center;gap:5px}
 .qcard-val{font-size:19px;font-weight:600;margin-bottom:2px}
 .qcard-sub{font-size:11px;color:var(--tx2)}
 .qcard-formula{font-size:10px;color:var(--tx3);margin-top:6px;font-family:monospace;border-top:1px solid var(--brd);padding-top:6px}
 .qcard.g .qcard-val{color:var(--green)} .qcard.r .qcard-val{color:var(--red)} .qcard.a .qcard-val{color:var(--amber)} .qcard.b .qcard-val{color:var(--blue)}
-
+/* Capital cards */
+.capital-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+.cap-card{background:var(--s2);border:1px solid var(--brd);border-radius:var(--r);padding:16px}
+.cap-card-lbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.cap-card-val{font-size:24px;font-weight:600;margin-bottom:4px}
+.cap-card-sub{font-size:11px;color:var(--tx2);line-height:1.5}
+.cap-card.g .cap-card-val{color:var(--green)} .cap-card.a .cap-card-val{color:var(--amber)} .cap-card.b .cap-card-val{color:var(--blue)} .cap-card.r .cap-card-val{color:var(--red)}
 /* Tooltip */
 .info-btn{width:14px;height:14px;border-radius:50%;border:1px solid var(--tx3);background:none;color:var(--tx3);font-size:9px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;padding:0;transition:all .15s}
 .info-btn:hover{border-color:var(--blue);color:var(--blue)}
-.tooltip-wrap{position:relative;display:inline-block}
-.tooltip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1a1a1d;border:1px solid var(--brd2);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--tx2);line-height:1.55;width:260px;z-index:100;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:none}
+.tooltip-wrap{position:relative;display:inline-block;vertical-align:middle}
+.tooltip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1a1a1d;border:1px solid var(--brd2);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--tx2);line-height:1.55;width:260px;z-index:200;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:none;text-transform:none;letter-spacing:0;font-weight:400}
 .tooltip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#1a1a1d}
 .tooltip-wrap:hover .tooltip-box,.tooltip-wrap.open .tooltip-box{display:block}
 .tooltip-title{font-weight:600;color:var(--tx);display:block;margin-bottom:5px;font-size:12px}
 .tooltip-formula{font-family:monospace;font-size:11px;background:var(--s3);padding:4px 8px;border-radius:4px;display:block;margin-top:6px;color:var(--tx2)}
-
-/* Capital section */
-.capital-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:16px}
-.cap-card{background:var(--s2);border:1px solid var(--brd);border-radius:var(--r);padding:16px}
-.cap-card-lbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
-.cap-card-val{font-size:24px;font-weight:600;margin-bottom:4px}
-.cap-card-sub{font-size:11px;color:var(--tx2);line-height:1.5}
-.cap-card.g .cap-card-val{color:var(--green)} .cap-card.a .cap-card-val{color:var(--amber)} .cap-card.b .cap-card-val{color:var(--blue)} .cap-card.r .cap-card-val{color:var(--red)}
-
+/* Tabs */
+.tabs{display:flex;gap:2px;background:var(--s2);border-radius:8px;padding:3px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;color:var(--tx2);cursor:pointer;border:none;background:none;transition:all .15s}
+.tab.active{background:var(--surface);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
 /* Monte Carlo */
-.mc-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.mc-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .mc-stat{background:var(--s3);border-radius:6px;padding:10px 12px;text-align:center}
 .mc-stat-v{font-size:16px;font-weight:600;margin-bottom:2px}
 .mc-stat-l{font-size:10px;color:var(--tx3);text-transform:uppercase}
 .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
 .slider-row label{font-size:12px;color:var(--tx2);white-space:nowrap}
-.slider-row input[type=range]{flex:1;min-width:100px;accent-color:var(--blue)}
-.slider-val{font-size:12px;font-weight:600;color:var(--tx);min-width:40px;text-align:right}
-.run-mc-btn{background:var(--bdim);border:1px solid var(--bbrd);color:#70abee;border-radius:6px;padding:7px 16px;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.slider-row input[type=range]{flex:1;min-width:80px;accent-color:var(--blue)}
+.slider-val{font-size:12px;font-weight:600;color:var(--tx);min-width:35px;text-align:right}
+.run-mc-btn{background:var(--bdim);border:1px solid var(--bbrd);color:#70abee;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;white-space:nowrap}
 .run-mc-btn:hover{background:var(--blue);color:#fff}
-
 /* Table */
 .table-wrap{background:var(--surface);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden}
 .table-ctrl{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--brd);gap:12px;flex-wrap:wrap}
 .table-ctrl input,.table-ctrl select{background:var(--s2);border:1px solid var(--brd2);color:var(--tx);padding:6px 10px;border-radius:6px;font-size:12px;outline:none}
 .table-ctrl input{width:200px}
 .table-ctrl input:focus{border-color:var(--blue)}
-.tbl-info{font-size:11px;color:var(--tx3)}
 table{width:100%;border-collapse:collapse;font-size:12px}
 thead th{padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--brd);white-space:nowrap}
 tbody tr{border-bottom:1px solid var(--brd);transition:background .1s}
@@ -133,17 +139,27 @@ tbody td{padding:8px 12px;white-space:nowrap}
 .pager button:hover{background:var(--s3);color:var(--tx)}
 .pager button:disabled{opacity:.3;cursor:not-allowed}
 .pager span{font-size:11px;color:var(--tx3);padding:0 6px}
-
-/* Tabs */
-.tabs{display:flex;gap:2px;background:var(--s2);border-radius:8px;padding:3px;margin-bottom:16px;flex-wrap:wrap}
-.tab{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;color:var(--tx2);cursor:pointer;border:none;background:none;transition:all .15s}
-.tab.active{background:var(--surface);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.3)}
-.tab-panel{display:none}
-.tab-panel.active{display:block}
-
+/* Regime status */
+.regime-status{font-size:12px;padding:10px 14px;border-radius:8px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.regime-status.loading{background:var(--bdim);border:1px solid var(--bbrd);color:#70abee}
+.regime-status.ok{background:var(--gdim);border:1px solid var(--gbrd);color:#5dd4a8}
+.regime-status.warn{background:var(--adim);border:1px solid var(--abrd);color:#f5c960}
+/* Footer */
+footer{margin-top:60px;border-top:1px solid var(--brd);padding:32px 0 40px}
+.footer-title{font-size:12px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:16px}
+.bib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.bib-card{background:var(--s2);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px}
+.bib-tag{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.bib-card.risk .bib-tag{color:var(--red)}
+.bib-card.quant .bib-tag{color:var(--blue)}
+.bib-card.psych .bib-tag{color:var(--amber)}
+.bib-card.mgmt .bib-tag{color:var(--green)}
+.bib-title{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:3px;line-height:1.4}
+.bib-author{font-size:11px;color:var(--tx2);margin-bottom:6px}
+.bib-desc{font-size:11px;color:var(--tx3);line-height:1.5}
 /* Responsive */
 @media(max-width:720px){
-  .charts-row,.charts-row-3{grid-template-columns:1fr}
+  .charts-row,.charts-row-3,.charts-row-2{grid-template-columns:1fr}
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .quant-grid{grid-template-columns:repeat(2,1fr)}
   .capital-grid{grid-template-columns:1fr 1fr}
@@ -152,12 +168,11 @@ tbody td{padding:8px 12px;white-space:nowrap}
   .table-ctrl{flex-direction:column;align-items:flex-start}
   .table-ctrl input{width:100%}
   .tooltip-box{left:0;transform:none;width:220px}
-  .wrap{padding:16px 12px 40px}
+  .wrap{padding:16px 12px 30px}
+  .bib-grid{grid-template-columns:1fr}
+  .fmt-grid{grid-template-columns:1fr}
 }
-@media(max-width:400px){
-  .kpi-grid,.capital-grid{grid-template-columns:1fr}
-  .quant-grid{grid-template-columns:1fr}
-}
+@media(max-width:400px){.kpi-grid,.capital-grid,.quant-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -165,276 +180,263 @@ tbody td{padding:8px 12px;white-space:nowrap}
   <div class="topbar">
     <div class="logo">
       <div class="logo-mark"><svg viewBox="0 0 18 18"><polyline points="1,14 5,8 9,11 13,4 17,7"/></svg></div>
-      <div>
-        <div class="logo-text">Profit Analytics</div>
-        <div class="logo-sub">Análise de risco · Sessão local · Sem armazenamento</div>
-      </div>
+      <div><div class="logo-text">Profit Analytics</div><div class="logo-sub">Análise de risco · Local · Sem armazenamento</div></div>
     </div>
-    <div style="display:flex;gap:8px;align-items:center">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
       <span class="period-badge" id="format-badge" style="display:none"></span>
+      <span class="period-badge" id="market-badge" style="display:none"></span>
       <span class="period-badge" id="period-badge" style="display:none"></span>
       <button class="reset-btn" id="reset-btn" style="display:none" onclick="resetApp()">↩ Novo arquivo</button>
     </div>
   </div>
 
-  <!-- Upload -->
+  <!-- Upload screen -->
   <div id="upload-screen">
     <div class="upload-card">
       <div class="upload-icon"><svg viewBox="0 0 32 32"><path d="M4 24v3a1 1 0 001 1h22a1 1 0 001-1v-3M16 4v18M10 10l6-6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="upload-title">Importar relatório Profit Pro</div>
-      <div class="upload-desc">Exporte o relatório de operações no Profit Pro e carregue aqui. A análise é feita 100% no seu navegador — nenhum dado é enviado a servidores.</div>
+      <div class="upload-title">Profit Analytics</div>
+      <div class="upload-desc">Análise quantitativa completa das suas operações. Tudo no seu navegador — nenhum dado enviado a servidores.</div>
       <div class="drop-zone" id="drop-zone">
         <input type="file" id="file-input" accept=".csv,.txt">
-        <div class="drop-label">Arraste o arquivo <strong>.csv</strong> aqui<br>ou clique para selecionar</div>
+        <div class="drop-label">Arraste o <strong>.csv</strong> do Profit Pro aqui<br>ou clique para selecionar</div>
       </div>
-      <div class="upload-hint">Detecta automaticamente o formato exportado — sem configuração necessária</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;text-align:left">
-        <div style="background:var(--s2);border:1px solid var(--gbrd);border-radius:8px;padding:12px">
-          <div style="font-size:10px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Relatório de Trading</div>
-          <div style="font-size:11px;color:var(--tx3);line-height:1.5">Relatórios → Trading<br>Coluna obrigatória: <code>Res. Operação</code></div>
-        </div>
-        <div style="background:var(--s2);border:1px solid var(--bbrd);border-radius:8px;padding:12px">
-          <div style="font-size:10px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Lista de Ordens</div>
-          <div style="font-size:11px;color:var(--tx3);line-height:1.5">Relatórios → Lista de Ordens<br>Trades reconstruídos por posição líquida</div>
-        </div>
+      <div class="upload-hint">Detecção automática de formato</div>
+      <div class="fmt-grid">
+        <div class="fmt-card"><div class="fmt-card-title" style="color:var(--green)">Relatório de Trading</div><div class="fmt-card-desc">Relatórios → Trading<br>Coluna: <code>Res. Operação</code></div></div>
+        <div class="fmt-card"><div class="fmt-card-title" style="color:var(--blue)">Lista de Ordens</div><div class="fmt-card-desc">Relatórios → Lista de Ordens<br>Trades reconstruídos por posição</div></div>
       </div>
+      <label class="market-upload" id="market-upload-label">
+        <input type="file" id="market-file-input" accept=".csv,.txt">
+        <span style="font-size:16px">📊</span>
+        <div style="flex:1">
+          <div style="font-weight:500;color:var(--tx)">Dados de mercado WIN <span style="font-weight:400;color:var(--tx3)">(opcional)</span></div>
+          <div style="font-size:11px;color:var(--tx3);margin-top:2px">CSV de candles do WIN para análise de regime. Sem isso, tentamos buscar automaticamente.</div>
+        </div>
+        <span class="market-badge pending" id="market-status-badge">Opcional</span>
+      </label>
       <div class="error-msg" id="error-msg">Não foi possível ler o arquivo. Verifique se é um CSV exportado pelo Profit Pro com a coluna <strong>Res. Operação</strong>.</div>
     </div>
   </div>
 
   <!-- Dashboard -->
   <div id="dashboard">
-    <!-- Tabs -->
     <div class="tabs">
       <button class="tab active" onclick="switchTab('visao')">Visão Geral</button>
-      <button class="tab" onclick="switchTab('risco')">Risco Quantitativo</button>
-      <button class="tab" onclick="switchTab('capital')">Capital &amp; Sizing</button>
+      <button class="tab" onclick="switchTab('risco')">Risco</button>
+      <button class="tab" onclick="switchTab('capital')">Capital</button>
       <button class="tab" onclick="switchTab('comportamento')">Comportamento</button>
+      <button class="tab" onclick="switchTab('research')">Research</button>
+      <button class="tab" onclick="switchTab('regime')">Regime</button>
       <button class="tab" onclick="switchTab('monte')">Monte Carlo</button>
       <button class="tab" onclick="switchTab('ops')">Operações</button>
     </div>
 
     <!-- TAB: Visão Geral -->
     <div class="tab-panel active" id="tab-visao">
-      <div class="section">
-        <div class="sec-hdr">alertas inteligentes</div>
-        <div class="alerts" id="alerts-container"></div>
-      </div>
-      <div class="section">
-        <div class="sec-hdr">indicadores principais</div>
-        <div class="kpi-grid" id="kpi-grid"></div>
-      </div>
+      <div class="section"><div class="sec-hdr">alertas inteligentes</div><div class="alerts" id="alerts-container"></div></div>
+      <div class="section"><div class="sec-hdr">indicadores principais</div><div class="kpi-grid" id="kpi-grid"></div></div>
       <div class="section">
         <div class="sec-hdr">curva de resultado &amp; distribuição</div>
         <div class="charts-row">
-          <div class="chart-card">
-            <div class="chart-title">Resultado acumulado (R$)</div>
-            <div class="chart-wrap h220"><canvas id="equity-chart" role="img" aria-label="Curva de resultado acumulado"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Distribuição de resultados</div>
-            <div class="chart-wrap h220"><canvas id="dist-chart" role="img" aria-label="Histograma de distribuição"></canvas></div>
-          </div>
+          <div class="chart-card"><div class="chart-title">Resultado acumulado (R$)</div><div class="chart-wrap h220"><canvas id="equity-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Distribuição de resultados</div><div class="chart-wrap h220"><canvas id="dist-chart"></canvas></div></div>
         </div>
       </div>
       <div class="section">
         <div class="sec-hdr">análise por período</div>
         <div class="charts-row-3">
-          <div class="chart-card">
-            <div class="chart-title">Resultado médio por dia</div>
-            <div class="chart-wrap h160"><canvas id="weekday-chart"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Win rate por dia</div>
-            <div class="chart-wrap h160"><canvas id="wr-weekday-chart"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Resultado médio por hora</div>
-            <div class="chart-wrap h160"><canvas id="hour-chart"></canvas></div>
-          </div>
+          <div class="chart-card"><div class="chart-title">Resultado médio por dia</div><div class="chart-wrap h160"><canvas id="weekday-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Win rate por dia</div><div class="chart-wrap h160"><canvas id="wr-weekday-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Resultado médio por hora</div><div class="chart-wrap h160"><canvas id="hour-chart"></canvas></div></div>
         </div>
       </div>
     </div>
 
-    <!-- TAB: Risco Quantitativo -->
+    <!-- TAB: Risco -->
     <div class="tab-panel" id="tab-risco">
-      <div class="section">
-        <div class="sec-hdr">métricas de risco</div>
-        <div class="quant-grid" id="quant-grid"></div>
-      </div>
+      <div class="section"><div class="sec-hdr">métricas de risco</div><div class="quant-grid" id="quant-grid"></div></div>
       <div class="section">
         <div class="sec-hdr">drawdown &amp; ativo</div>
         <div class="charts-row">
-          <div class="chart-card">
-            <div class="chart-title">Drawdown por operação</div>
-            <div class="chart-wrap h180"><canvas id="dd-chart"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">P&amp;L por ativo</div>
-            <div class="chart-wrap h180"><canvas id="symbol-chart"></canvas></div>
-          </div>
+          <div class="chart-card"><div class="chart-title">Drawdown por operação</div><div class="chart-wrap h180"><canvas id="dd-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">P&amp;L por ativo</div><div class="chart-wrap h180"><canvas id="symbol-chart"></canvas></div></div>
         </div>
       </div>
       <div class="section">
-        <div class="sec-hdr">análise de eficiência (MEP / MEN)</div>
+        <div class="sec-hdr">eficiência MEP / MEN</div>
         <div class="charts-row">
-          <div class="chart-card">
-            <div class="chart-title">Eficiência de captura — ganhos (MEP aproveitado)</div>
-            <div class="chart-wrap h180"><canvas id="mep-chart"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Eficiência de saída — perdas (MEN sofrido)</div>
-            <div class="chart-wrap h180"><canvas id="men-chart"></canvas></div>
-          </div>
+          <div class="chart-card"><div class="chart-title">MEP aproveitado (ganhos potenciais)</div><div class="chart-wrap h180"><canvas id="mep-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">MEN sofrido (perdas potenciais)</div><div class="chart-wrap h180"><canvas id="men-chart"></canvas></div></div>
         </div>
-        <div style="margin-top:10px;font-size:12px;color:var(--tx3);line-height:1.6;padding:12px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--brd)">
-          <strong style="color:var(--tx2)">MEP</strong> (Máximo Excursão Positiva): quanto o mercado foi a seu favor antes do fechamento. Se você fechou operações com resultado menor que o MEP sistematicamente, está saindo cedo demais. <br>
-          <strong style="color:var(--tx2)">MEN</strong> (Máximo Excursão Negativa): quanto o mercado foi contra você antes de fechar. Se resultado &gt; MEN frequentemente, você aguenta pressão bem.
-        </div>
+        <div style="margin-top:10px;font-size:12px;color:var(--tx3);padding:12px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--brd);line-height:1.6"><strong style="color:var(--tx2)">MEP</strong>: quanto o mercado foi a seu favor antes de fechar. <strong style="color:var(--tx2)">MEN</strong>: quanto foi contra antes de fechar.</div>
       </div>
     </div>
 
-    <!-- TAB: Capital & Sizing -->
+    <!-- TAB: Capital -->
     <div class="tab-panel" id="tab-capital">
-      <div class="section">
-        <div class="sec-hdr">capital necessário para operar</div>
-        <div id="capital-cards" class="capital-grid"></div>
-        <div style="font-size:12px;color:var(--tx3);padding:12px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--brd);line-height:1.6">
-          <strong style="color:var(--tx2)">Margem WIN mini:</strong> ~R$ 1.200/contrato · <strong style="color:var(--tx2)">Margem WDO mini:</strong> ~R$ 1.500/contrato. Verifique os valores atuais na sua corretora — variam com volatilidade.
-        </div>
-      </div>
+      <div class="section"><div class="sec-hdr">capital necessário</div><div id="capital-cards" class="capital-grid"></div><div style="font-size:12px;color:var(--tx3);padding:12px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--brd);line-height:1.6"><strong style="color:var(--tx2)">Margem WIN mini:</strong> ~R$ 1.200/contrato · <strong style="color:var(--tx2)">Margem WDO:</strong> ~R$ 1.500/contrato</div></div>
       <div class="section">
         <div class="sec-hdr">expectativa futura por horizonte</div>
-        <div class="chart-card" style="margin-bottom:12px">
-          <div class="chart-title">Resultado esperado acumulado (baseado na expectativa histórica)</div>
-          <div class="chart-wrap h220"><canvas id="expectativa-chart"></canvas></div>
-        </div>
-        <div id="horizon-cards" class="quant-grid"></div>
+        <div class="chart-card" style="margin-bottom:12px"><div class="chart-title">Resultado esperado acumulado com IC 90%</div><div class="chart-wrap h220"><canvas id="expectativa-chart"></canvas></div></div>
+        <div class="quant-grid" id="horizon-cards"></div>
       </div>
       <div class="section">
-        <div class="sec-hdr">análise de sizing — impacto do tamanho de posição</div>
-        <div class="chart-card">
-          <div class="chart-title">Simulação: resultado total por número de contratos (mantendo win rate e razão W/L)</div>
-          <div class="chart-wrap h220"><canvas id="sizing-chart"></canvas></div>
-        </div>
+        <div class="sec-hdr">simulação de sizing</div>
+        <div class="chart-card"><div class="chart-title">Resultado total simulado por número de contratos (100 ops)</div><div class="chart-wrap h220"><canvas id="sizing-chart"></canvas></div></div>
       </div>
     </div>
 
     <!-- TAB: Comportamento -->
     <div class="tab-panel" id="tab-comportamento">
-
       <div class="section">
-        <div class="sec-hdr">resultado por segmento de horário</div>
-        <div id="seg-insights" class="alerts" style="margin-bottom:12px"></div>
+        <div class="sec-hdr">segmentos de horário</div>
+        <div class="alerts" id="seg-insights" style="margin-bottom:12px"></div>
         <div class="charts-row-3">
-          <div class="chart-card">
-            <div class="chart-title">P&amp;L médio por hora</div>
-            <div class="chart-wrap h180"><canvas id="hora-pnl-chart"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Win rate por hora</div>
-            <div class="chart-wrap h180"><canvas id="hora-wr-chart"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Segmentos do dia</div>
-            <div class="chart-wrap h180"><canvas id="seg-chart"></canvas></div>
-          </div>
+          <div class="chart-card"><div class="chart-title">P&amp;L médio por hora</div><div class="chart-wrap h180"><canvas id="hora-pnl-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Win rate por hora</div><div class="chart-wrap h180"><canvas id="hora-wr-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Segmentos do dia</div><div class="chart-wrap h180"><canvas id="seg-chart"></canvas></div></div>
         </div>
       </div>
-
       <div class="section">
         <div class="sec-hdr">análise por tamanho de posição</div>
-        <div class="charts-row">
-          <div class="chart-card">
-            <div class="chart-title">Expectativa por nº de contratos</div>
-            <div class="chart-wrap h200"><canvas id="qtd-exp-chart"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Win rate por nº de contratos</div>
-            <div class="chart-wrap h200"><canvas id="qtd-wr-chart"></canvas></div>
-          </div>
+        <div class="charts-row-2">
+          <div class="chart-card"><div class="chart-title">Expectativa por nº de contratos</div><div class="chart-wrap h200"><canvas id="qtd-exp-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Win rate por nº de contratos</div><div class="chart-wrap h200"><canvas id="qtd-wr-chart"></canvas></div></div>
         </div>
         <div class="quant-grid" style="margin-top:12px" id="qtd-cards"></div>
       </div>
-
       <div class="section">
-        <div class="sec-hdr">tempo nas operações</div>
-        <div class="charts-row">
-          <div class="chart-card">
-            <div class="chart-title">Duração média — ganhos vs perdas (minutos)</div>
-            <div class="chart-wrap h180"><canvas id="dur-chart"></canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Distribuição de duração</div>
-            <div class="chart-wrap h180"><canvas id="dur-dist-chart"></canvas></div>
-          </div>
+        <div class="sec-hdr">duração das operações</div>
+        <div class="charts-row-2">
+          <div class="chart-card"><div class="chart-title">Duração média — ganhos vs perdas (min)</div><div class="chart-wrap h180"><canvas id="dur-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Distribuição de duração</div><div class="chart-wrap h180"><canvas id="dur-dist-chart"></canvas></div></div>
         </div>
         <div class="quant-grid" style="margin-top:12px" id="dur-cards"></div>
       </div>
-
       <div class="section">
         <div class="sec-hdr">drawdown diário &amp; horário ótimo de parada</div>
-        <div class="chart-card" style="margin-bottom:12px">
-          <div class="chart-title">Drawdown máximo intraday por sessão</div>
-          <div class="chart-wrap h200"><canvas id="dd-dia-chart"></canvas></div>
-        </div>
-        <div class="chart-card" style="margin-bottom:12px">
-          <div class="chart-title">Se você tivesse parado no pico — resultado perdido por continuar operando</div>
-          <div class="chart-wrap h180"><canvas id="peak-chart"></canvas></div>
-        </div>
-        <div style="font-size:12px;color:var(--tx3);padding:12px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--brd);line-height:1.6">
-          <strong style="color:var(--tx2)">Horário ótimo de parada:</strong> mostra o quanto de resultado você "devolveu" ao mercado após atingir o pico do dia. Barras vermelhas = dias onde continuar operando custou resultado positivo acumulado.
-        </div>
+        <div class="chart-card" style="margin-bottom:12px"><div class="chart-title">Drawdown máximo vs resultado por sessão</div><div class="chart-wrap h200"><canvas id="dd-dia-chart"></canvas></div></div>
+        <div class="chart-card" style="margin-bottom:12px"><div class="chart-title">Resultado devolvido após o pico diário (barras vermelhas = continuou operando e perdeu o que tinha ganho)</div><div class="chart-wrap h180"><canvas id="peak-chart"></canvas></div></div>
       </div>
-
       <div class="section">
-        <div class="sec-hdr">análise de recuperação &amp; resiliência</div>
+        <div class="sec-hdr">recuperação &amp; resiliência</div>
         <div class="quant-grid" id="recovery-cards"></div>
-        <div class="chart-card" style="margin-top:12px">
-          <div class="chart-title">Ops necessárias para recuperar cada perda (distribuição)</div>
-          <div class="chart-wrap h180"><canvas id="recovery-chart"></canvas></div>
-        </div>
+        <div class="chart-card" style="margin-top:12px"><div class="chart-title">Operações necessárias para recuperar cada perda (distribuição)</div><div class="chart-wrap h180"><canvas id="recovery-chart"></canvas></div></div>
       </div>
-
       <div class="section">
         <div class="sec-hdr">custo de aumentar a mão</div>
-        <div class="chart-card">
-          <div class="chart-title">Expectativa marginal por contrato adicional — o que cada contrato a mais contribui</div>
-          <div class="chart-wrap h200"><canvas id="marginal-chart"></canvas></div>
+        <div class="chart-card"><div class="chart-title">Expectativa marginal por contrato adicional</div><div class="chart-wrap h200"><canvas id="marginal-chart"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- TAB: Research -->
+    <div class="tab-panel" id="tab-research">
+      <div class="section">
+        <div class="sec-hdr">rolling metrics — evolução do edge <span style="font-size:10px;font-weight:400;text-transform:none;color:var(--tx3)">janela móvel 20 ops</span></div>
+        <div class="charts-row-2">
+          <div class="chart-card"><div class="chart-title">Win rate rolling</div><div class="chart-wrap h180"><canvas id="rolling-wr-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Expectativa rolling (R$/op)</div><div class="chart-wrap h180"><canvas id="rolling-exp-chart"></canvas></div></div>
         </div>
-        <div style="margin-top:10px;font-size:12px;color:var(--tx3);padding:12px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--brd);line-height:1.6">
-          <strong style="color:var(--tx2)">Custo de aumentar a mão:</strong> divide a expectativa total de cada grupo pelo número de contratos. Mostra se cada contrato marginal agrega ou destrói valor esperado. Se a curva cair ao adicionar contratos, você está super-alavancado naquele tamanho.
+        <div class="quant-grid" style="margin-top:12px" id="rolling-cards"></div>
+      </div>
+      <div class="section">
+        <div class="sec-hdr">momentos estatísticos — distribuição de retornos</div>
+        <div class="quant-grid" id="moments-cards"></div>
+        <div class="chart-card" style="margin-top:12px"><div class="chart-title">QQ-Plot — desvio da normalidade (pontos acima da linha = caudas mais pesadas que o normal)</div><div class="chart-wrap h220"><canvas id="qq-chart"></canvas></div></div>
+      </div>
+      <div class="section">
+        <div class="sec-hdr">autocorrelação dos resultados</div>
+        <div class="charts-row-2">
+          <div class="chart-card"><div class="chart-title">Autocorrelação por lag (barras coloridas = significativas)</div><div class="chart-wrap h180"><canvas id="acf-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">P&amp;L médio seguinte após gain vs loss</div><div class="chart-wrap h180"><canvas id="momentum-chart"></canvas></div></div>
+        </div>
+        <div class="quant-grid" style="margin-top:12px" id="acf-cards"></div>
+      </div>
+      <div class="section">
+        <div class="sec-hdr">primeira operação do dia como preditor</div>
+        <div class="charts-row-2">
+          <div class="chart-card"><div class="chart-title">P&amp;L restante do dia após 1ª op</div><div class="chart-wrap h180"><canvas id="first-trade-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Win rate do dia condicionado à 1ª op</div><div class="chart-wrap h180"><canvas id="first-wr-chart"></canvas></div></div>
+        </div>
+        <div class="quant-grid" style="margin-top:12px" id="first-trade-cards"></div>
+      </div>
+      <div class="section">
+        <div class="sec-hdr">decomposição do alpha</div>
+        <div style="font-size:12px;color:var(--tx3);margin-bottom:12px;padding:10px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--brd);line-height:1.6">Quanto do resultado vem de <strong style="color:var(--tx2)">Timing</strong> (entrar na hora certa), <strong style="color:var(--tx2)">Sizing</strong> (tamanho da posição) e <strong style="color:var(--tx2)">Holding</strong> (tempo na posição)?</div>
+        <div class="quant-grid" id="alpha-cards"></div>
+        <div class="chart-card" style="margin-top:12px"><div class="chart-title">Correlação entre tamanho da posição e resultado (dispersão)</div><div class="chart-wrap h180"><canvas id="sizing-corr-chart"></canvas></div></div>
+      </div>
+      <div class="section">
+        <div class="sec-hdr">ratios avançados de performance</div>
+        <div class="quant-grid" id="ratios-cards"></div>
+      </div>
+      <div class="section">
+        <div class="sec-hdr">stress testing condicional — VaR por contexto</div>
+        <div style="font-size:12px;color:var(--tx3);margin-bottom:12px;padding:10px 14px;background:var(--s2);border-radius:8px;border:1px solid var(--brd);line-height:1.6">O risco muda drasticamente dependendo do estado em que você entra na operação. VaR 95% e CVaR calculados condicionados ao contexto.</div>
+        <div class="quant-grid" id="stress-cards"></div>
+      </div>
+      <div class="section" id="slippage-section">
+        <div class="sec-hdr">slippage &amp; qualidade de execução <span id="slippage-badge" style="font-size:10px;font-weight:400;text-transform:none;color:var(--tx3)"></span></div>
+        <div id="slippage-content">
+          <div class="charts-row-2">
+            <div class="chart-card"><div class="chart-title">Slippage médio por hora (pontos)</div><div class="chart-wrap h180"><canvas id="slip-hora-chart"></canvas></div></div>
+            <div class="chart-card"><div class="chart-title">Slippage por tamanho de ordem (pontos)</div><div class="chart-wrap h180"><canvas id="slip-qtd-chart"></canvas></div></div>
+          </div>
+          <div class="quant-grid" style="margin-top:12px" id="slip-cards"></div>
         </div>
       </div>
-
     </div>
-    <!-- /TAB: Comportamento -->
+
+    <!-- TAB: Regime -->
+    <div class="tab-panel" id="tab-regime">
+      <div class="section">
+        <div class="sec-hdr">regime de mercado</div>
+        <div class="regime-status" id="regime-status-bar" style="display:none"></div>
+        <div id="regime-upload-hint" style="margin-bottom:12px">
+          <div class="alert info"><span class="alert-icon">📡</span><div><span class="alert-title">Buscando dados do WIN no Yahoo Finance...</span><span class="alert-msg">Aguarde um momento. Se o Yahoo estiver indisponível, use o botão abaixo para carregar um CSV de candles do Profit Pro.</span></div></div>
+          <label style="display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:9px 16px;background:var(--bdim);border:1px solid var(--bbrd);border-radius:8px;color:#70abee;font-size:13px;cursor:pointer;font-weight:500">
+            <input type="file" id="market-file-input-inline" accept=".csv,.txt" style="display:none">
+            📂 Carregar CSV de candles do WIN
+          </label>
+          <div style="margin-top:8px;font-size:11px;color:var(--tx3)">No Profit Pro: Gráfico → Exportar dados → salvar como CSV. Precisa das colunas Data e Fechamento (ou Close).</div>
+        </div>
+        <div class="quant-grid" id="regime-summary-cards"></div>
+      </div>
+      <div class="section">
+        <div class="sec-hdr">volatilidade realizada &amp; regime por dia</div>
+        <div class="chart-card" style="margin-bottom:12px"><div class="chart-title">Volatilidade intraday por sessão (proxy de regime)</div><div class="chart-wrap h180"><canvas id="regime-vol-chart"></canvas></div></div>
+        <div class="charts-row-2">
+          <div class="chart-card"><div class="chart-title">P&amp;L médio — tendência vs lateral</div><div class="chart-wrap h180"><canvas id="regime-pnl-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Win rate por regime</div><div class="chart-wrap h180"><canvas id="regime-wr-chart"></canvas></div></div>
+        </div>
+      </div>
+      <div class="section" id="market-data-section" style="display:none">
+        <div class="sec-hdr">mercado WIN — dados externos</div>
+        <div class="chart-card" style="margin-bottom:12px"><div class="chart-title">WIN — preço de fechamento diário</div><div class="chart-wrap h200"><canvas id="market-price-chart"></canvas></div></div>
+        <div class="charts-row-2">
+          <div class="chart-card"><div class="chart-title">Volatilidade mercado vs seu P&amp;L (correlação)</div><div class="chart-wrap h180"><canvas id="market-vol-pnl-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Sua performance por quartil de volatilidade de mercado</div><div class="chart-wrap h180"><canvas id="market-quartile-chart"></canvas></div></div>
+        </div>
+      </div>
+    </div>
 
     <!-- TAB: Monte Carlo -->
     <div class="tab-panel" id="tab-monte">
       <div class="section">
         <div class="sec-hdr">simulação monte carlo</div>
-        <div style="font-size:13px;color:var(--tx2);margin-bottom:16px;line-height:1.6">
-          Simulação de caminhos futuros possíveis baseada na distribuição histórica dos seus resultados. Cada linha é uma sequência aleatória das suas operações — mostra o leque de cenários prováveis dado o seu edge atual.
-        </div>
+        <div style="font-size:13px;color:var(--tx2);margin-bottom:16px;line-height:1.6">Simulação de caminhos futuros baseada na distribuição histórica. Cada linha = uma sequência aleatória das suas operações.</div>
         <div class="slider-row">
-          <label>Operações futuras:</label>
+          <label>Operações:</label>
           <input type="range" id="mc-ops" min="20" max="500" value="100" step="10" oninput="document.getElementById('mc-ops-val').textContent=this.value">
           <span class="slider-val" id="mc-ops-val">100</span>
           <label>Simulações:</label>
           <input type="range" id="mc-sims" min="100" max="2000" value="500" step="100" oninput="document.getElementById('mc-sims-val').textContent=this.value">
           <span class="slider-val" id="mc-sims-val">500</span>
-          <button class="run-mc-btn" onclick="runMonteCarlo()">▶ Rodar simulação</button>
+          <button class="run-mc-btn" onclick="runMonteCarlo()">▶ Rodar</button>
         </div>
         <div class="mc-bar" id="mc-stats"></div>
-        <div class="chart-card">
-          <div class="chart-title">Caminhos simulados &amp; percentis (10%, 50%, 90%)</div>
-          <div class="chart-wrap h260"><canvas id="mc-chart"></canvas></div>
-        </div>
-        <div class="chart-card" style="margin-top:12px">
-          <div class="chart-title">Distribuição de resultados finais</div>
-          <div class="chart-wrap h180"><canvas id="mc-dist-chart"></canvas></div>
-        </div>
+        <div class="chart-card"><div class="chart-title">Caminhos simulados com percentis 10%, 50%, 90%</div><div class="chart-wrap h260"><canvas id="mc-chart"></canvas></div></div>
+        <div class="chart-card" style="margin-top:12px"><div class="chart-title">Distribuição dos resultados finais</div><div class="chart-wrap h180"><canvas id="mc-dist-chart"></canvas></div></div>
       </div>
     </div>
 
@@ -446,18 +448,14 @@ tbody td{padding:8px 12px;white-space:nowrap}
           <div class="table-ctrl">
             <input type="text" id="search-input" placeholder="Filtrar por ativo ou data..." oninput="filterTable()">
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-              <select id="side-filter" onchange="filterTable()">
-                <option value="">Todos</option><option value="C">Compra (C)</option><option value="V">Venda (V)</option>
-              </select>
-              <select id="result-filter" onchange="filterTable()">
-                <option value="">Todos</option><option value="win">Somente gains</option><option value="loss">Somente losses</option>
-              </select>
-              <span class="tbl-info" id="table-info"></span>
+              <select id="side-filter" onchange="filterTable()"><option value="">Todos</option><option value="C">Compra</option><option value="V">Venda</option></select>
+              <select id="result-filter" onchange="filterTable()"><option value="">Todos</option><option value="win">Gains</option><option value="loss">Losses</option></select>
+              <span style="font-size:11px;color:var(--tx3)" id="table-info"></span>
             </div>
           </div>
           <div style="overflow-x:auto">
             <table id="trades-table">
-              <thead><tr><th>#</th><th>Ativo</th><th>Abertura</th><th>Duração</th><th>Lado</th><th>Qtd</th><th>Resultado</th><th>MEP</th><th>MEN</th><th>Drawdown</th><th>Sequência</th></tr></thead>
+              <thead><tr><th>#</th><th>Ativo</th><th>Abertura</th><th>Duração</th><th>Lado</th><th>Qtd</th><th>Resultado</th><th>MEP</th><th>MEN</th><th>Drawdown</th><th>Seq.</th></tr></thead>
               <tbody id="trades-body"></tbody>
             </table>
           </div>
@@ -470,39 +468,46 @@ tbody td{padding:8px 12px;white-space:nowrap}
       </div>
     </div>
   </div><!-- /dashboard -->
+
+  <!-- Footer -->
+  <footer id="footer" style="display:none">
+    <div class="footer-title">📚 Leitura recomendada — risco, quant e gestão de trading</div>
+    <div class="bib-grid">
+      <div class="bib-card risk"><div class="bib-tag">Risco &amp; VaR</div><div class="bib-title">Value at Risk</div><div class="bib-author">Philippe Jorion · 3ª ed.</div><div class="bib-desc">A referência definitiva sobre VaR. Cobre metodologia histórica, paramétrica e Monte Carlo. Essencial para entender os limites de cada abordagem.</div></div>
+      <div class="bib-card quant"><div class="bib-tag">Quant Trading</div><div class="bib-title">Quantitative Trading</div><div class="bib-author">Ernest Chan · Wiley</div><div class="bib-desc">Como construir, testar e executar estratégias algorítmicas. Cobertura prática de Sharpe, drawdown, Kelly e backtesting com dados reais.</div></div>
+      <div class="bib-card mgmt"><div class="bib-tag">Gestão de risco</div><div class="bib-title">The New Trading for a Living</div><div class="bib-author">Alexander Elder · Wiley</div><div class="bib-desc">Fundamentos de gestão de capital, regra dos 2%, diário de operações e psicologia. Clássico para traders de todos os níveis.</div></div>
+      <div class="bib-card quant"><div class="bib-tag">Sistemático</div><div class="bib-title">Systematic Trading</div><div class="bib-author">Robert Carver · Harriman House</div><div class="bib-desc">Framework completo para sizing de posição, diversificação e construção de portfólio sistemático. Forte em gestão de risco prática.</div></div>
+      <div class="bib-card risk"><div class="bib-tag">Gestão de posição</div><div class="bib-title">Trade Your Way to Financial Freedom</div><div class="bib-author">Van K. Tharp · McGraw-Hill</div><div class="bib-desc">O conceito de R-múltiplos, expectancy e position sizing. Um dos melhores frameworks para avaliar qualidade de estratégias.</div></div>
+      <div class="bib-card psych"><div class="bib-tag">Psicologia</div><div class="bib-title">Trading in the Zone</div><div class="bib-author">Mark Douglas · Prentice Hall</div><div class="bib-desc">Mindset probabilístico, aceitação do risco e consistência. Aborda revenge trading, overconfidence e os padrões que os dados desta ferramenta revelam.</div></div>
+      <div class="bib-card quant"><div class="bib-tag">Mercados &amp; microestrutura</div><div class="bib-title">Advances in Financial Machine Learning</div><div class="bib-author">Marcos López de Prado · Wiley</div><div class="bib-desc">Análise de regime de mercado, features de barras financeiras e backtesting sem viés. Referência de ponta em quant research.</div></div>
+      <div class="bib-card risk"><div class="bib-tag">Kelly &amp; sizing</div><div class="bib-title">Fortune's Formula</div><div class="bib-author">William Poundstone · Hill &amp; Wang</div><div class="bib-desc">A história do Critério de Kelly, suas aplicações em apostas e mercados financeiros, e por que a fração completa é perigosa.</div></div>
+      <div class="bib-card psych"><div class="bib-tag">Comportamento</div><div class="bib-title">Thinking, Fast and Slow</div><div class="bib-author">Daniel Kahneman · Farrar, Straus</div><div class="bib-desc">Vieses cognitivos que afetam decisões sob incerteza. Explica os padrões que a análise de autocorrelação e revenge trading desta ferramenta detecta.</div></div>
+    </div>
+    <div style="margin-top:20px;font-size:11px;color:var(--tx3);text-align:center">Profit Analytics · Análise local, sem servidor · Dados nunca saem do seu navegador</div>
+  </footer>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 // ─── State ────────────────────────────────────────────
-let allTrades=[],filteredTrades=[],currentPage=1,statsCache=null;
+let allTrades=[],filteredTrades=[],currentPage=1,statsCache=null,marketData=null;
 const PAGE_SIZE=30;
 let charts={};
 
 // ─── Tabs ─────────────────────────────────────────────
 function switchTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>{
-    const ids=['visao','risco','capital','comportamento','monte','ops'];
-    t.classList.toggle('active',ids[i]===id);
-  });
+  const ids=['visao','risco','capital','comportamento','research','regime','monte','ops'];
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',ids[i]===id));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+id));
   if(id==='monte'&&!charts.mc) runMonteCarlo();
+  if(id==='regime') renderRegime(statsCache);
 }
 
 // ─── Tooltip toggle (mobile) ──────────────────────────
 document.addEventListener('click',e=>{
   const btn=e.target.closest('.info-btn');
-  if(btn){
-    const wrap=btn.closest('.tooltip-wrap');
-    const wasOpen=wrap.classList.contains('open');
-    document.querySelectorAll('.tooltip-wrap.open').forEach(w=>w.classList.remove('open'));
-    if(!wasOpen) wrap.classList.add('open');
-    e.stopPropagation();
-  } else {
-    document.querySelectorAll('.tooltip-wrap.open').forEach(w=>w.classList.remove('open'));
-  }
+  if(btn){const w=btn.closest('.tooltip-wrap');const was=w.classList.contains('open');document.querySelectorAll('.tooltip-wrap.open').forEach(x=>x.classList.remove('open'));if(!was)w.classList.add('open');e.stopPropagation();}
+  else document.querySelectorAll('.tooltip-wrap.open').forEach(x=>x.classList.remove('open'));
 });
-
 // ─── Parse ────────────────────────────────────────────
 function parseBRL(s){
   if(!s||s.trim()==='-'||s.trim()===' - '||s.trim()==='') return null;
@@ -912,8 +917,160 @@ function computeStats(trades){
   const maxRecovery=recoveryTimes.length?Math.max(...recoveryTimes):0;
   const pct50Recovery=recoveryTimes.length?[...recoveryTimes].sort((a,b)=>a-b)[Math.floor(recoveryTimes.length*0.5)]:0;
 
+  // ── RESEARCH ANALYTICS ───────────────────────────────
+
+  // Skewness, Kurtosis, Jarque-Bera
+  const skewness=stdDev>0?results.reduce((a,r)=>a+(r-mean)**3,0)/(n*stdDev**3):0;
+  const exKurtosis=stdDev>0?results.reduce((a,r)=>a+(r-mean)**4,0)/(n*stdDev**4)-3:0;
+  const jbStat=n/6*(skewness**2+exKurtosis**2/4);
+
+  // Sortino, Calmar, Ulcer Index
+  const downsideReturns=results.filter(r=>r<0);
+  const downsideVar=downsideReturns.reduce((a,r)=>a+r**2,0)/n;
+  const downsideDev=Math.sqrt(downsideVar);
+  const sortino=downsideDev>0?(mean/downsideDev)*Math.sqrt(252):0;
+  const calmar=maxDD>0?(mean*252)/maxDD:0;
+  let ddPcts=[],pk2=0;
+  equity.forEach(e=>{if(e>pk2)pk2=e;ddPcts.push(pk2>0?((pk2-e)/pk2*100):0);});
+  const ulcer=Math.sqrt(ddPcts.reduce((a,d)=>a+d**2,0)/ddPcts.length);
+
+  // Autocorrelation lag 1-10
+  const acf=[];
+  const resMean=mean;
+  const resVar=variance;
+  for(let lag=1;lag<=10;lag++){
+    let cov=0;
+    for(let i=lag;i<n;i++) cov+=(results[i]-resMean)*(results[i-lag]-resMean);
+    acf.push(resVar>0?cov/n/resVar:0);
+  }
+
+  // Rolling metrics (window 20)
+  const rollingWin=20;
+  const rollingWR=[],rollingExp=[],rollingDD=[];
+  for(let i=rollingWin;i<=n;i++){
+    const w=results.slice(i-rollingWin,i);
+    const ww=w.filter(r=>r>0),wl=w.filter(r=>r<0);
+    const wr=ww.length/rollingWin;
+    const aw=ww.length?ww.reduce((a,b)=>a+b,0)/ww.length:0;
+    const al=wl.length?Math.abs(wl.reduce((a,b)=>a+b,0)/wl.length):0;
+    rollingWR.push(wr);
+    rollingExp.push(wr*aw-(1-wr)*al);
+  }
+  const edgeTrend=rollingExp.length>=4?(rollingExp.slice(-4).reduce((a,b)=>a+b,0)/4)-(rollingExp.slice(0,4).reduce((a,b)=>a+b,0)/4):0;
+
+  // First trade of day as predictor
+  const byDayArr=Object.values(
+    trades.reduce((acc,t)=>{
+      const k=t.dateStr||'?';
+      if(!acc[k]) acc[k]=[];
+      acc[k].push(t); return acc;
+    },{})
+  ).map(ts=>[...ts].sort((a,b)=>a.dt-b.dt)).filter(ts=>ts.length>1);
+
+  const firstWinDays=byDayArr.filter(ts=>ts[0].resultado>0);
+  const firstLossDays=byDayArr.filter(ts=>ts[0].resultado<0);
+  const restAfterFirstWin=firstWinDays.map(ts=>ts.slice(1).reduce((a,t)=>a+t.resultado,0));
+  const restAfterFirstLoss=firstLossDays.map(ts=>ts.slice(1).reduce((a,t)=>a+t.resultado,0));
+  const avgRestWin=restAfterFirstWin.length?restAfterFirstWin.reduce((a,b)=>a+b,0)/restAfterFirstWin.length:0;
+  const avgRestLoss=restAfterFirstLoss.length?restAfterFirstLoss.reduce((a,b)=>a+b,0)/restAfterFirstLoss.length:0;
+  const dayWRafterFirstWin=firstWinDays.length?firstWinDays.filter(ts=>ts.reduce((a,t)=>a+t.resultado,0)>0).length/firstWinDays.length:0;
+  const dayWRafterFirstLoss=firstLossDays.length?firstLossDays.filter(ts=>ts.reduce((a,t)=>a+t.resultado,0)>0).length/firstLossDays.length:0;
+
+  // Alpha decomposition
+  // Timing score: std of hour of trade entry (more spread = more selective timing)
+  const hourStd=(()=>{const hs=trades.map(t=>t.hour).filter(h=>h!=null);const hm=hs.reduce((a,b)=>a+b,0)/hs.length;return Math.sqrt(hs.reduce((a,h)=>a+(h-hm)**2,0)/hs.length);})();
+  // Sizing contribution: correlation between qtd and |resultado|
+  const qtdCorr=(()=>{
+    const pairs=trades.filter(t=>t.qtd>0).map(t=>({x:t.qtd,y:t.resultado}));
+    if(pairs.length<3) return 0;
+    const mx=pairs.reduce((a,p)=>a+p.x,0)/pairs.length;
+    const my=pairs.reduce((a,p)=>a+p.y,0)/pairs.length;
+    const num=pairs.reduce((a,p)=>a+(p.x-mx)*(p.y-my),0);
+    const den=Math.sqrt(pairs.reduce((a,p)=>a+(p.x-mx)**2,0)*pairs.reduce((a,p)=>a+(p.y-my)**2,0));
+    return den>0?num/den:0;
+  })();
+  // Holding contribution: correlation between durSec and resultado
+  const durCorr=(()=>{
+    const pairs=trades.filter(t=>t.durSec!=null&&t.durSec>0).map(t=>({x:t.durSec,y:t.resultado}));
+    if(pairs.length<3) return 0;
+    const mx=pairs.reduce((a,p)=>a+p.x,0)/pairs.length;
+    const my=pairs.reduce((a,p)=>a+p.y,0)/pairs.length;
+    const num=pairs.reduce((a,p)=>a+(p.x-mx)*(p.y-my),0);
+    const den=Math.sqrt(pairs.reduce((a,p)=>a+(p.x-mx)**2,0)*pairs.reduce((a,p)=>a+(p.y-my)**2,0));
+    return den>0?num/den:0;
+  })();
+
+  // Conditional stress
+  const stressGroups={
+    postLoss:  {trades:trades.filter((_,i)=>i>0&&trades[i-1].resultado<0), label:'Após loss'},
+    postWin:   {trades:trades.filter((_,i)=>i>0&&trades[i-1].resultado>0), label:'Após gain'},
+    bigSize:   {trades:trades.filter(t=>t.qtd>=(Math.max(...trades.map(t2=>t2.qtd))*0.6)), label:'Posição grande'},
+    smallSize: {trades:trades.filter(t=>t.qtd<=2), label:'Posição pequena'},
+    morning:   {trades:trades.filter(t=>t.hour!=null&&t.hour<11), label:'Manhã <11h'},
+    afternoon: {trades:trades.filter(t=>t.hour!=null&&t.hour>=14), label:'Tarde ≥14h'},
+  };
+  const stressStats={};
+  for(const [k,g] of Object.entries(stressGroups)){
+    if(g.trades.length<3){stressStats[k]={label:g.label,n:0,var95:0,cvar:0,wr:0};continue;}
+    const rs=g.trades.map(t=>t.resultado).sort((a,b)=>a-b);
+    const vi=Math.max(0,Math.floor(rs.length*0.05)-1);
+    const v95=rs[vi]??rs[0];
+    const cv=rs.slice(0,vi+1).reduce((a,b)=>a+b,0)/(vi+1)||v95;
+    stressStats[k]={label:g.label,n:g.trades.length,var95:v95,cvar:cv,
+      wr:g.trades.filter(t=>t.resultado>0).length/g.trades.length,
+      avg:rs.reduce((a,b)=>a+b,0)/rs.length};
+  }
+
+  // Slippage (Format B: trades have .slippage from order parsing)
+  const slippageData=trades.filter(t=>t.slippage!=null);
+
+  // Market regime from fills (volatility of fill prices per day)
+  const fillsByDay={};
+  trades.forEach(t=>{
+    const k=t.dateStr||'?';
+    if(!fillsByDay[k]) fillsByDay[k]=[];
+    if(t.entryFill) fillsByDay[k].push(t.entryFill);
+    if(t.exitFill) fillsByDay[k].push(t.exitFill);
+  });
+  const regimeData=Object.entries(fillsByDay).map(([date,fills])=>{
+    if(fills.length<2) return null;
+    const fm=fills.reduce((a,b)=>a+b,0)/fills.length;
+    const vol=Math.sqrt(fills.reduce((a,f)=>a+(f-fm)**2,0)/fills.length);
+    const dayTrades=trades.filter(t=>(t.dateStr||'?')===date);
+    const pnl=dayTrades.reduce((a,t)=>a+t.resultado,0);
+    return{date,vol,pnl,n:dayTrades.length};
+  }).filter(Boolean);
+  const medVol=regimeData.length?[...regimeData].sort((a,b)=>a.vol-b.vol)[Math.floor(regimeData.length/2)].vol:0;
+  const highVolDays=regimeData.filter(d=>d.vol>medVol);
+  const lowVolDays=regimeData.filter(d=>d.vol<=medVol);
+  const avgPnlHighVol=highVolDays.length?highVolDays.reduce((a,d)=>a+d.pnl,0)/highVolDays.length:0;
+  const avgPnlLowVol=lowVolDays.length?lowVolDays.reduce((a,d)=>a+d.pnl,0)/lowVolDays.length:0;
+
+  // QQ data (empirical vs normal quantiles)
+  const qqData=(()=>{
+    const sorted=[...results].sort((a,b)=>a-b);
+    return sorted.map((r,i)=>{
+      const p=(i+0.5)/sorted.length;
+      // inverse normal approximation (Beasley-Springer-Moro)
+      const normQ=(pp)=>{
+        const a=[2.50662823884,-18.61500062529,41.39119773534,-25.44106049637];
+        const b=[-8.47351093090,23.08336743743,-21.06224101826,3.13082909833];
+        const c=[0.3374754822726147,0.9761690190917186,0.1607979714918209,0.0276438810333863,0.0038405729373609,0.0003951896511349,0.0000321767881768,0.0000002888167364,0.0000003960315187];
+        const x=pp-0.5;
+        if(Math.abs(x)<0.42){const r2=x*x;return x*(((a[3]*r2+a[2])*r2+a[1])*r2+a[0])/((((b[3]*r2+b[2])*r2+b[1])*r2+b[0])*r2+1);}
+        const r2=pp<0.5?Math.log(-Math.log(pp)):Math.log(-Math.log(1-pp));
+        const s=c[0]+r2*(c[1]+r2*(c[2]+r2*(c[3]+r2*(c[4]+r2*(c[5]+r2*(c[6]+r2*(c[7]+r2*c[8])))))));
+        return pp<0.5?-s:s;
+      };
+      return{theoretical:mean+stdDev*normQ(p),empirical:r};
+    });
+  })();
+
   return{n,wins:wins.length,losses:losses.length,winRate,avgWin,avgLoss,totalPnl,expectancy,mean,stdDev,kelly,kellyQ,var95,var99,cvar95,maxDD,profitFactor,sharpe,equity,ddSeries,results,dayStats,hourStats,postLossWR,postWinWR,symStats,maxWinSeq:maxWS,maxLossSeq:maxLS,grossW,grossL,mepEff,menEff,avgQtd,medQtd,maxQtd,trades,
-    hourDetail,segStats,qtdStats,avgDurWin,avgDurLoss,medDurWin,medDurLoss,dayDetail,recoveryTimes,avgRecovery,maxRecovery,pct50Recovery};
+    hourDetail,segStats,qtdStats,avgDurWin,avgDurLoss,medDurWin,medDurLoss,dayDetail,recoveryTimes,avgRecovery,maxRecovery,pct50Recovery,
+    skewness,exKurtosis,jbStat,sortino,calmar,ulcer,acf,rollingWR,rollingExp,edgeTrend,
+    firstWinDays:firstWinDays.length,firstLossDays:firstLossDays.length,avgRestWin,avgRestLoss,dayWRafterFirstWin,dayWRafterFirstLoss,
+    hourStd,qtdCorr,durCorr,stressStats,slippageData,regimeData,medVol,avgPnlHighVol,avgPnlLowVol,qqData};
 }
 
 // ─── Helpers ──────────────────────────────────────────
@@ -1124,181 +1281,781 @@ function renderCharts(s){
   charts.sizing=new Chart(document.getElementById('sizing-chart'),{type:'bar',data:{labels:contracts.map(c=>c+'x'),datasets:[{data:sizingData,backgroundColor:sizingData.map(v=>v>=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v.toLocaleString('pt-BR')}}}}});
 }
 
+
+// ─── Tooltip builder (safe — never inside class attribute) ────────────────
+function tip(title,desc,formula=''){
+  const f=formula?`<span class="tooltip-formula">${formula}</span>`:'';
+  return `<div class="tooltip-wrap"><button class="info-btn" aria-label="${title}">?</button><div class="tooltip-box"><span class="tooltip-title">${title}</span>${desc}${f}</div></div>`;
+}
+
+// ─── Quant cards with tooltips (FIXED: tip only in label, not in class) ───
+function renderQuant(s){
+  const ratio=s.avgLoss>0?s.avgWin/s.avgLoss:99;
+  const items=[
+    {l:'VaR 95%',v:fmtR(s.var95),sub:'perda esperada 95% das ops',c:s.var95<-800?'r':'a',
+     tt:'Value at Risk 95%',td:'Em 5% das operações, a perda esperada supera este valor. Use como referência para seu stop diário.',tf:'sort(results)[floor(n×0.05)]'},
+    {l:'VaR 99%',v:fmtR(s.var99),sub:'pior 1% das operações',c:'r',
+     tt:'Value at Risk 99%',td:'Cenário de stress: perda esperada no pior 1% das operações. Use para dimensionar capital de reserva.',tf:'sort(results)[floor(n×0.01)]'},
+    {l:'CVaR 95%',v:fmtR(s.cvar95),sub:'perda média na cauda',c:'r',
+     tt:'Conditional VaR (Expected Shortfall)',td:'Média das perdas que superam o VaR 95%. Mais conservador que o VaR porque mede a severidade dos piores cenários, não apenas o limiar.',tf:'E[X | X < VaR₀.₀₅]'},
+    {l:'Kelly bruto',v:pct(s.kelly),sub:'fração ótima teórica',c:s.kelly<0?'r':s.kelly>0.3?'a':'g',
+     tt:'Critério de Kelly',td:'Fração do capital que maximiza o crescimento geométrico da conta. Acima de 30% é perigoso pela variância. Negativo significa que a estratégia destrói capital.',tf:'W − (1−W)×(L/G)'},
+    {l:'Kelly ¼ (safe)',v:pct(s.kellyQ),sub:'exposição recomendada',c:'b',
+     tt:'Fração de Kelly conservadora',td:'Use apenas 25% do Kelly bruto. Reduz volatilidade da conta em ~75% com pequena perda de crescimento esperado. Padrão na literatura de gestão de risco.',tf:'0.25 × Kelly'},
+    {l:'Payoff ratio',v:ratio.toFixed(2)+'x',sub:'ganho médio / perda média',c:ratio>=1?'g':'r',
+     tt:'Payoff Ratio (Risk/Reward)',td:'Quantas vezes o ganho médio supera a perda média. Abaixo de 1 significa que você perde mais do que ganha por operação — precisa de win rate alto para compensar.',tf:'avg_win / avg_loss'},
+    {l:'Breakeven WR',v:pct(s.avgLoss/(s.avgWin+s.avgLoss)),sub:'win rate mínimo para lucrar',c:'a',
+     tt:'Win rate de equilíbrio',td:'Percentual mínimo de operações vencedoras para que a estratégia seja lucrativa, dado o payoff ratio atual. Se seu win rate real estiver abaixo disso, você perde dinheiro.',tf:'L / (W + L)'},
+    {l:'WR pós-perda',v:pct(s.postLossWR),sub:`vs ${pct(s.winRate)} geral`,c:s.postLossWR<s.winRate-0.08?'r':'g',
+     tt:'Win rate após operação perdedora',td:'Se muito menor que o win rate geral, indica que você opera de forma diferente após uma perda — possivelmente por viés emocional (revenge trading). Diferença > 8pp é sinal de alerta.',tf:'wins_after_loss / ops_after_loss'},
+    {l:'Sharpe anual.',v:s.sharpe.toFixed(2),sub:'retorno ajustado por risco',c:s.sharpe>1?'g':s.sharpe>0?'a':'r',
+     tt:'Sharpe Ratio anualizado',td:'Mede retorno por unidade de risco. Acima de 1.0 é bom. Acima de 2.0 é excelente. Valores negativos indicam que renda fixa seria melhor.',tf:'(μ/σ) × √252'},
+    {l:'Seq. ganhos máx.',v:s.maxWinSeq,sub:'consecutivas',c:'g',
+     tt:'Sequência máxima de ganhos',td:'O maior número de operações vencedoras consecutivas. Útil para entender o perfil de clustering dos resultados e calibrar expectativas de streaks.',tf:'max consecutive wins'},
+    {l:'Seq. perdas máx.',v:s.maxLossSeq,sub:'consecutivas',c:'r',
+     tt:'Sequência máxima de perdas',td:'O maior número de operações perdedoras consecutivas. Use para calcular o capital mínimo necessário para sobreviver ao drawdown mais longo.',tf:'max consecutive losses'},
+  ];
+  document.getElementById('quant-grid').innerHTML=items.map(k=>`
+    <div class="qcard ${k.c}">
+      <div class="qcard-lbl">${k.l} ${tip(k.tt,k.td,k.tf)}</div>
+      <div class="qcard-val">${k.v}</div>
+      <div class="qcard-sub">${k.sub}</div>
+    </div>`).join('');
+}
+
+// ─── Capital & Sizing ─────────────────────────────────
+function renderCapital(s){
+  const MARGIN_WIN=1200,MARGIN_WDO=1500;
+  const avg=Math.round(s.avgQtd),symbol=s.trades[0]?s.trades[0].ativo:'WIN';
+  const margin=symbol.startsWith('WDO')?MARGIN_WDO:MARGIN_WIN;
+  const capMargem=Math.round(avg*margin);
+  const capSafe=Math.round(Math.abs(s.var99)*s.maxLossSeq*1.5);
+  const capRec=Math.max(capMargem*3,capSafe);
+  const stopDiario=Math.round(Math.abs(s.cvar95)*1.5);
+  const items=[
+    {l:'Capital margem (avg qtd)',v:fmtR(capMargem),sub:`${avg} contratos × R$ ${margin}`,c:'a',tt:'Capital mínimo de margem',td:`Baseado na quantidade média operada (${avg} contratos) × margem por contrato. Este é o mínimo absoluto — sem buffer para drawdown.`},
+    {l:'Capital recomendado',v:fmtR(capRec),sub:'inclui buffer de drawdown',c:'b',tt:'Capital operacional sugerido',td:'max(3× margem, 1.5× VaR99 × max_streak_perdas). Permite sobreviver ao pior drawdown histórico com margem de segurança.'},
+    {l:'Stop diário sugerido',v:fmtR(stopDiario),sub:'1.5× CVaR 95%',c:'r',tt:'Stop loss diário recomendado',td:'Baseado no CVaR 95% — a perda média esperada nos piores 5% das suas sessões. Zere a tela ao atingir este valor.'},
+    {l:'Resultado/contrato',v:fmtR(s.expectancy/Math.max(s.medQtd,1)),sub:'expectativa normalizada',c:s.expectancy>0?'g':'r',tt:'Expectativa por contrato',td:'Divide a expectativa bruta pela quantidade mediana de contratos. Mostra quanto cada contrato marginal contribui esperado por operação.'},
+  ];
+  document.getElementById('capital-cards').innerHTML=items.map(k=>`
+    <div class="cap-card ${k.c}">
+      <div class="cap-card-lbl">${k.l} ${tip(k.tt,k.td)}</div>
+      <div class="cap-card-val">${k.v}</div>
+      <div class="cap-card-sub">${k.sub}</div>
+    </div>`).join('');
+
+  const horizons=[10,25,50,100,200,500];
+  document.getElementById('horizon-cards').innerHTML=horizons.map(h=>{
+    const exp=s.expectancy*h,ci=1.645*s.stdDev*Math.sqrt(h);
+    return `<div class="qcard ${exp>0?'g':'r'}">
+      <div class="qcard-lbl">${h} operações ${tip('Projeção linear','Expectativa histórica × N operações. Assume edge estacionário. Não garante resultados futuros.',`E=${Math.round(s.expectancy)}×N ± 1.645×σ√N`)}</div>
+      <div class="qcard-val">${fmtR(exp)}</div>
+      <div class="qcard-sub">IC 90%: ±${fmtR(ci)}</div>
+    </div>`;
+  }).join('');
+}
+function renderCharts(s){
+  destroyCharts();
+  const n=s.equity.length,labels=s.equity.map((_,i)=>`${i+1}`);
+  const isProfit=s.equity[n-1]>0;
+
+  charts.equity=new Chart(document.getElementById('equity-chart'),{type:'line',data:{labels,datasets:[{data:s.equity,borderColor:isProfit?'#1baf7a':'#e34948',backgroundColor:isProfit?'rgba(27,175,122,.08)':'rgba(227,73,72,.08)',borderWidth:2,pointRadius:0,fill:true,tension:0.25}]},options:{...baseOpts,scales:{x:{display:false},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v).toLocaleString('pt-BR')}}}}});
+
+  const mn=Math.min(...s.results),mx=Math.max(...s.results),bins=20,bsz=(mx-mn)/bins||1;
+  const counts=Array(bins).fill(0);
+  s.results.forEach(r=>{const idx=Math.min(Math.floor((r-mn)/bsz),bins-1);counts[idx]++;});
+  const bLabels=Array(bins).fill(0).map((_,i)=>Math.round(mn+i*bsz));
+  charts.dist=new Chart(document.getElementById('dist-chart'),{type:'bar',data:{labels:bLabels,datasets:[{data:counts,backgroundColor:bLabels.map(l=>l>=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK,maxRotation:45,autoSkip:true,maxTicksLimit:8,callback:(_,i)=>bLabels[i]}},y:{grid:{color:GRID},ticks:{color:TICK}}}}});
+
+  const dL=s.dayStats.map(d=>d.day.substring(0,3)),dA=s.dayStats.map(d=>+d.avg.toFixed(0));
+  charts.weekday=new Chart(document.getElementById('weekday-chart'),{type:'bar',data:{labels:dL,datasets:[{data:dA,backgroundColor:dA.map(v=>v>=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
+
+  const wrV=s.dayStats.map(d=>+(d.wr*100).toFixed(1));
+  charts.wrWeekday=new Chart(document.getElementById('wr-weekday-chart'),{type:'bar',data:{labels:dL,datasets:[{data:wrV,backgroundColor:wrV.map(v=>v>=50?BC:AC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'%'},min:0,max:100}}}});
+
+  const hE=Object.entries(s.hourStats).sort((a,b)=>+a[0]-+b[0]);
+  if(hE.length){
+    const hL=hE.map(([h])=>h+'h'),hA=hE.map(([,v])=>+(v.sum/v.n).toFixed(0));
+    charts.hour=new Chart(document.getElementById('hour-chart'),{type:'bar',data:{labels:hL,datasets:[{data:hA,backgroundColor:hA.map(v=>v>=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
+  }
+
+  charts.dd=new Chart(document.getElementById('dd-chart'),{type:'line',data:{labels,datasets:[{data:s.ddSeries,borderColor:'#e34948',backgroundColor:'rgba(227,73,72,.08)',borderWidth:1.5,pointRadius:0,fill:true,tension:0.2}]},options:{...baseOpts,scales:{x:{display:false},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v).toLocaleString('pt-BR')}}}}});
+
+  const sE=Object.entries(s.symStats).sort((a,b)=>b[1].sum-a[1].sum);
+  charts.symbol=new Chart(document.getElementById('symbol-chart'),{type:'bar',data:{labels:sE.map(([s])=>s),datasets:[{data:sE.map(([,v])=>+v.sum.toFixed(0)),backgroundColor:sE.map(([,v])=>v.sum>=0?GC:RC)}]},options:{...baseOpts,indexAxis:'y',scales:{x:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}},y:{grid:{display:false},ticks:{color:TICK}}}}});
+
+  // MEP efficiency scatter
+  const mepData=s.trades.filter(t=>t.mep&&t.mep>0).map(t=>({x:t.mep,y:t.resultado}));
+  if(mepData.length){
+    charts.mep=new Chart(document.getElementById('mep-chart'),{type:'scatter',data:{datasets:[{data:mepData,backgroundColor:mepData.map(d=>d.y>0?GC:RC),pointRadius:3}]},options:{...baseOpts,scales:{x:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v},title:{display:true,text:'MEP (R$)',color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v},title:{display:true,text:'Resultado (R$)',color:TICK}}}}});
+  }
+  const menData=s.trades.filter(t=>t.men&&t.men<0).map(t=>({x:Math.abs(t.men),y:t.resultado}));
+  if(menData.length){
+    charts.men=new Chart(document.getElementById('men-chart'),{type:'scatter',data:{datasets:[{data:menData,backgroundColor:menData.map(d=>d.y>0?GC:RC),pointRadius:3}]},options:{...baseOpts,scales:{x:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v},title:{display:true,text:'|MEN| (R$)',color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v},title:{display:true,text:'Resultado (R$)',color:TICK}}}}});
+  }
+
+  // Expectativa acumulada
+  const horizons=[10,25,50,75,100,150,200,300,500];
+  const expLine=horizons.map(h=>s.expectancy*h);
+  const upper=horizons.map((h,i)=>expLine[i]+1.645*s.stdDev*Math.sqrt(h));
+  const lower=horizons.map((h,i)=>expLine[i]-1.645*s.stdDev*Math.sqrt(h));
+  charts.expectativa=new Chart(document.getElementById('expectativa-chart'),{
+    type:'line',
+    data:{labels:horizons.map(h=>h+'ops'),datasets:[
+      {data:upper,borderColor:'rgba(27,175,122,.3)',borderDash:[4,4],pointRadius:0,borderWidth:1,fill:'+1',backgroundColor:'rgba(27,175,122,.05)'},
+      {data:expLine,borderColor:'#1baf7a',borderWidth:2,pointRadius:3,fill:false,label:'Esperado'},
+      {data:lower,borderColor:'rgba(227,73,72,.3)',borderDash:[4,4],pointRadius:0,borderWidth:1,fill:false}
+    ]},
+    options:{...baseOpts,plugins:{legend:{display:false}},scales:{x:{grid:{color:GRID},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v).toLocaleString('pt-BR')}}}}
+  });
+
+  // Sizing simulation
+  const contracts=[1,2,3,4,5,6,8,10,15,20];
+  const base1Exp=s.expectancy/Math.max(s.medQtd,1);
+  const sizingData=contracts.map(c=>+(base1Exp*c*100).toFixed(0));
+  charts.sizing=new Chart(document.getElementById('sizing-chart'),{type:'bar',data:{labels:contracts.map(c=>c+'x'),datasets:[{data:sizingData,backgroundColor:sizingData.map(v=>v>=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v.toLocaleString('pt-BR')}}}}});
+}
+
+
 // ─── Behavior Tab ─────────────────────────────────────
 function renderBehavior(s){
-  const fmtMin=m=>`${Math.floor(m)}min${Math.round((m%1)*60).toString().padStart(2,'0')}s`;
+  const fmtMin=m=>{const h=Math.floor(m/60),mn=Math.floor(m%60);return h>0?`${h}h${mn}min`:`${mn}min`;};
 
   // Segment insights
-  const segInsights=document.getElementById('seg-insights');
-  const bestSeg=Object.values(s.segStats).filter(x=>x.n>2).reduce((a,b)=>b.avg>a.avg?b:a,{avg:-Infinity,label:'?'});
-  const worstSeg=Object.values(s.segStats).filter(x=>x.n>2).reduce((a,b)=>b.avg<a.avg?b:a,{avg:Infinity,label:'?'});
-  segInsights.innerHTML=`
-    <div class="alert ok"><span class="alert-icon">⏰</span><div><span class="alert-title">Melhor período: ${bestSeg.label}</span><span class="alert-msg">${bestSeg.n} operações · WR ${(bestSeg.wr*100).toFixed(0)}% · média ${fmtR(bestSeg.avg)}/op · total ${fmtR(bestSeg.sum)}</span></div></div>
-    <div class="alert ${worstSeg.avg<0?'crit':'warn'}"><span class="alert-icon">⚠️</span><div><span class="alert-title">Pior período: ${worstSeg.label}</span><span class="alert-msg">${worstSeg.n} operações · WR ${(worstSeg.wr*100).toFixed(0)}% · média ${fmtR(worstSeg.avg)}/op · total ${fmtR(worstSeg.sum)}</span></div></div>
-    ${s.avgDurLoss>s.avgDurWin*1.3?`<div class="alert warn"><span class="alert-icon">⏱️</span><div><span class="alert-title">Você segura o prejuízo ${((s.avgDurLoss/s.avgDurWin-1)*100).toFixed(0)}% mais tempo que o ganho</span><span class="alert-msg">Ganhos: ${fmtMin(s.avgDurWin)} · Perdas: ${fmtMin(s.avgDurLoss)}. Clássico sinal de relutância em aceitar stop.</span></div></div>`:''}
-  `;
+  const segsArr=Object.values(s.segStats).filter(x=>x.n>2);
+  const bestSeg=segsArr.length?segsArr.reduce((a,b)=>b.avg>a.avg?b:a,segsArr[0]):{label:'?',n:0,wr:0,avg:0,sum:0};
+  const worstSeg=segsArr.length?segsArr.reduce((a,b)=>b.avg<a.avg?b:a,segsArr[0]):{label:'?',n:0,wr:0,avg:0,sum:0};
+  document.getElementById('seg-insights').innerHTML=`
+    <div class="alert ok"><span class="alert-icon">⏰</span><div><span class="alert-title">Melhor período: ${bestSeg.label}</span><span class="alert-msg">${bestSeg.n} ops · WR ${(bestSeg.wr*100).toFixed(0)}% · média ${fmtR(bestSeg.avg)}/op · total ${fmtR(bestSeg.sum)}</span></div></div>
+    <div class="alert ${worstSeg.avg<0?'crit':'warn'}"><span class="alert-icon">⚠️</span><div><span class="alert-title">Pior período: ${worstSeg.label}</span><span class="alert-msg">${worstSeg.n} ops · WR ${(worstSeg.wr*100).toFixed(0)}% · média ${fmtR(worstSeg.avg)}/op · total ${fmtR(worstSeg.sum)}</span></div></div>
+    ${s.avgDurLoss>s.avgDurWin*1.3?`<div class="alert warn"><span class="alert-icon">⏱️</span><div><span class="alert-title">Você segura o prejuízo ${((s.avgDurLoss/s.avgDurWin-1)*100).toFixed(0)}% mais tempo que o ganho</span><span class="alert-msg">Ganhos: ${fmtMin(s.avgDurWin)} · Perdas: ${fmtMin(s.avgDurLoss)}. Clássico sinal de relutância em aceitar stop.</span></div></div>`:''}`;
 
-  // Hour PnL chart
-  const hEntries=Object.entries(s.hourDetail).sort((a,b)=>+a[0]-+b[0]);
-  const hLabels=hEntries.map(([h])=>h+'h');
-  const hAvgs=hEntries.map(([,v])=>+(v.sum/v.n).toFixed(0));
-  const hWRs=hEntries.map(([,v])=>+(v.wins/v.n*100).toFixed(1));
+  const hE=Object.entries(s.hourDetail).sort((a,b)=>+a[0]-+b[0]);
+  const hL=hE.map(([h])=>h+'h');
+  const hA=hE.map(([,v])=>+(v.sum/v.n).toFixed(0));
+  const hW=hE.map(([,v])=>+(v.wins/v.n*100).toFixed(1));
 
   if(charts.horaPnl) charts.horaPnl.destroy();
-  charts.horaPnl=new Chart(document.getElementById('hora-pnl-chart'),{type:'bar',
-    data:{labels:hLabels,datasets:[{data:hAvgs,backgroundColor:hAvgs.map(v=>v>=0?GC:RC)}]},
-    options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
-
+  charts.horaPnl=new Chart(document.getElementById('hora-pnl-chart'),{type:'bar',data:{labels:hL,datasets:[{data:hA,backgroundColor:hA.map(v=>v>=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
   if(charts.horaWR) charts.horaWR.destroy();
-  charts.horaWR=new Chart(document.getElementById('hora-wr-chart'),{type:'bar',
-    data:{labels:hLabels,datasets:[{data:hWRs,backgroundColor:hWRs.map(v=>v>=50?BC:AC)}]},
-    options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'%'},min:0,max:100}}}});
+  charts.horaWR=new Chart(document.getElementById('hora-wr-chart'),{type:'bar',data:{labels:hL,datasets:[{data:hW,backgroundColor:hW.map(v=>v>=50?BC:AC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'%'},min:0,max:100}}}});
 
-  // Segments chart
-  const segLabels=['Manhã\n9-11h','Meio-dia\n11-13h','Almoço\n13-14h','Tarde\n14-18h'];
-  const segKeys=['manha','meio','almoco','tarde'];
-  const segAvgs=segKeys.map(k=>+(s.segStats[k]?.avg||0).toFixed(0));
+  const segK=['manha','meio','almoco','tarde'],segL=['Manhã\n9-11h','Meio-dia\n11-13h','Almoço\n13-14h','Tarde\n14-18h'];
+  const segA=segK.map(k=>+(s.segStats[k]?.avg||0).toFixed(0));
   if(charts.seg) charts.seg.destroy();
-  charts.seg=new Chart(document.getElementById('seg-chart'),{type:'bar',
-    data:{labels:segLabels,datasets:[{data:segAvgs,backgroundColor:segAvgs.map(v=>v>=0?GC:RC)}]},
-    options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
+  charts.seg=new Chart(document.getElementById('seg-chart'),{type:'bar',data:{labels:segL,datasets:[{data:segA,backgroundColor:segA.map(v=>v>=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
 
-  // Contract size: expectancy chart
-  const qtdLabels=s.qtdStats.map(q=>q.qtd+'x');
-  const qtdAvgs=s.qtdStats.map(q=>Math.round(q.avg));
-  const qtdWRs=s.qtdStats.map(q=>+(q.wr*100).toFixed(1));
+  const qL=s.qtdStats.map(q=>q.qtd+'x'),qA=s.qtdStats.map(q=>Math.round(q.avg)),qW=s.qtdStats.map(q=>+(q.wr*100).toFixed(1));
   if(charts.qtdExp) charts.qtdExp.destroy();
-  charts.qtdExp=new Chart(document.getElementById('qtd-exp-chart'),{type:'bar',
-    data:{labels:qtdLabels,datasets:[{data:qtdAvgs,backgroundColor:qtdAvgs.map(v=>v>=0?GC:RC),label:'Expectativa'}]},
-    options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`R$${c.raw} (${s.qtdStats[c.dataIndex].n} ops)`}}},
-      scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
-
+  charts.qtdExp=new Chart(document.getElementById('qtd-exp-chart'),{type:'bar',data:{labels:qL,datasets:[{data:qA,backgroundColor:qA.map(v=>v>=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
   if(charts.qtdWR) charts.qtdWR.destroy();
-  charts.qtdWR=new Chart(document.getElementById('qtd-wr-chart'),{type:'bar',
-    data:{labels:qtdLabels,datasets:[{data:qtdWRs,backgroundColor:qtdWRs.map(v=>v>=50?BC:AC)}]},
-    options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'%'},min:0,max:100}}}});
+  charts.qtdWR=new Chart(document.getElementById('qtd-wr-chart'),{type:'bar',data:{labels:qL,datasets:[{data:qW,backgroundColor:qW.map(v=>v>=50?BC:AC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'%'},min:0,max:100}}}});
 
-  // Contract size cards (top 5 by frequency)
-  const top5=s.qtdStats.sort((a,b)=>b.n-a.n).slice(0,6);
-  document.getElementById('qtd-cards').innerHTML=top5.map(q=>`
+  // Contract cards — top 6 by frequency, with tips in label not class
+  const top6=s.qtdStats.sort((a,b)=>b.n-a.n).slice(0,6);
+  document.getElementById('qtd-cards').innerHTML=top6.map(q=>`
     <div class="qcard ${q.avg>0?'g':'r'}">
-      <div class="qcard-lbl">${q.qtd} contrato${q.qtd>1?'s':''}</div>
+      <div class="qcard-lbl">${q.qtd} contrato${q.qtd>1?'s':''} ${tip('Análise por tamanho',`${q.n} operações com ${q.qtd} contratos. WR ${(q.wr*100).toFixed(0)}%. Rendimento por contrato: ${fmtR(q.perContract)}.`)}</div>
       <div class="qcard-val">${fmtR(q.avg)}/op</div>
       <div class="qcard-sub">${q.n} ops · WR ${(q.wr*100).toFixed(0)}% · ${fmtR(q.perContract)}/contrato</div>
       <div class="qcard-formula">total ${fmtR(q.sum)}</div>
     </div>`).join('');
 
-  // Duration charts
-  const allDurs=[...s.trades.filter(t=>t.durSec!=null)].map(t=>({dur:t.durSec/60,win:t.resultado>0}));
+  // Duration
+  const allDurs=s.trades.filter(t=>t.durSec!=null).map(t=>({dur:t.durSec/60,win:t.resultado>0}));
   if(charts.dur) charts.dur.destroy();
   charts.dur=new Chart(document.getElementById('dur-chart'),{type:'bar',
-    data:{labels:['Duração média','Duração mediana'],
-      datasets:[
-        {label:'Ganhos',data:[+s.avgDurWin.toFixed(1),+s.medDurWin.toFixed(1)],backgroundColor:GC},
-        {label:'Perdas',data:[+s.avgDurLoss.toFixed(1),+s.medDurLoss.toFixed(1)],backgroundColor:RC}
-      ]},
-    options:{...baseOpts,plugins:{legend:{display:true,labels:{color:TICK}}},
-      scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'min'}}}}});
+    data:{labels:['Duração média','Duração mediana'],datasets:[
+      {label:'Ganhos',data:[+s.avgDurWin.toFixed(1),+s.medDurWin.toFixed(1)],backgroundColor:GC},
+      {label:'Perdas',data:[+s.avgDurLoss.toFixed(1),+s.medDurLoss.toFixed(1)],backgroundColor:RC}
+    ]},options:{...baseOpts,plugins:{legend:{display:true,labels:{color:TICK}}},scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'min'}}}}});
 
-  // Duration distribution histogram
-  const maxDur=Math.min(120,Math.max(...allDurs.map(d=>d.dur)));
-  const durBins=12; const durBsz=maxDur/durBins;
-  const wBins=Array(durBins).fill(0),lBins=Array(durBins).fill(0);
-  allDurs.forEach(({dur,win})=>{const i=Math.min(Math.floor(dur/durBsz),durBins-1);win?wBins[i]++:lBins[i]++;});
-  const durBinLabels=Array(durBins).fill(0).map((_,i)=>Math.round(i*durBsz)+'min');
+  const maxDur=Math.min(120,Math.max(1,...allDurs.map(d=>d.dur)));
+  const dBins=12,dBsz=maxDur/dBins;
+  const wB=Array(dBins).fill(0),lB=Array(dBins).fill(0);
+  allDurs.forEach(({dur,win})=>{const i=Math.min(Math.floor(dur/dBsz),dBins-1);win?wB[i]++:lB[i]++;});
+  const dBL=Array(dBins).fill(0).map((_,i)=>Math.round(i*dBsz)+'min');
   if(charts.durDist) charts.durDist.destroy();
   charts.durDist=new Chart(document.getElementById('dur-dist-chart'),{type:'bar',
-    data:{labels:durBinLabels,datasets:[
-      {label:'Ganhos',data:wBins,backgroundColor:'rgba(27,175,122,.6)'},
-      {label:'Perdas',data:lBins,backgroundColor:'rgba(227,73,72,.6)'}
-    ]},
-    options:{...baseOpts,plugins:{legend:{display:true,labels:{color:TICK}}},
-      scales:{x:{stacked:false,grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK}}}}});
+    data:{labels:dBL,datasets:[{label:'Ganhos',data:wB,backgroundColor:'rgba(27,175,122,.6)'},{label:'Perdas',data:lB,backgroundColor:'rgba(227,73,72,.6)'}]},
+    options:{...baseOpts,plugins:{legend:{display:true,labels:{color:TICK}}},scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK}}}}});
 
   document.getElementById('dur-cards').innerHTML=`
     <div class="qcard ${s.avgDurWin<s.avgDurLoss?'r':'g'}">
-      <div class="qcard-lbl">Duração média — ganhos</div>
-      <div class="qcard-val">${fmtMin(s.avgDurWin)}</div>
-      <div class="qcard-sub">mediana ${fmtMin(s.medDurWin)}</div>
+      <div class="qcard-lbl">Duração média — ganhos ${tip('Duração dos ganhos','Tempo médio das operações vencedoras. Se muito menor que os losses, você está saindo cedo nos ganhos (deixando dinheiro na mesa).')}</div>
+      <div class="qcard-val">${fmtMin(s.avgDurWin)}</div><div class="qcard-sub">mediana ${fmtMin(s.medDurWin)}</div>
     </div>
     <div class="qcard r">
-      <div class="qcard-lbl">Duração média — perdas</div>
-      <div class="qcard-val">${fmtMin(s.avgDurLoss)}</div>
-      <div class="qcard-sub">mediana ${fmtMin(s.medDurLoss)}</div>
+      <div class="qcard-lbl">Duração média — perdas ${tip('Duração das perdas','Tempo médio das operações perdedoras. Muito maior que os ganhos = você segura o prejuízo esperando reverter (disposição effect).')}</div>
+      <div class="qcard-val">${fmtMin(s.avgDurLoss)}</div><div class="qcard-sub">mediana ${fmtMin(s.medDurLoss)}</div>
     </div>
     <div class="qcard ${s.avgDurLoss>s.avgDurWin?'r':'g'}">
-      <div class="qcard-lbl">Ratio duração L/W</div>
+      <div class="qcard-lbl">Ratio duração L/W ${tip('Ratio duração L/W','Quantas vezes você segura uma perda mais do que um ganho. Acima de 1.3 é sinal claro do efeito disposição — tendência a cortar ganhos cedo e segurar perdas.')}</div>
       <div class="qcard-val">${s.avgDurWin>0?(s.avgDurLoss/s.avgDurWin).toFixed(2)+'x':'—'}</div>
-      <div class="qcard-sub">${s.avgDurLoss>s.avgDurWin*1.2?'Você segura perdas muito mais tempo':'Duração equilibrada'}</div>
+      <div class="qcard-sub">${s.avgDurLoss>s.avgDurWin*1.2?'Segura perdas muito mais tempo':'Duração equilibrada'}</div>
     </div>`;
 
-  // Per-day drawdown chart
-  const ddDayLabels=s.dayDetail.map(d=>d.date.slice(0,5));
-  const ddDayVals=s.dayDetail.map(d=>-d.maxDD);
-  const ddDayTot=s.dayDetail.map(d=>d.sum);
+  // Per-day DD + peak
+  const ddL=s.dayDetail.map(d=>d.date.slice(0,5));
+  const ddV=s.dayDetail.map(d=>-d.maxDD),ddT=s.dayDetail.map(d=>d.sum);
   if(charts.ddDia) charts.ddDia.destroy();
   charts.ddDia=new Chart(document.getElementById('dd-dia-chart'),{type:'bar',
-    data:{labels:ddDayLabels,datasets:[
-      {label:'P&L do dia',data:ddDayTot,backgroundColor:ddDayTot.map(v=>v>=0?'rgba(27,175,122,.4)':'rgba(227,73,72,.4)'),type:'bar'},
-      {label:'Drawdown máx',data:ddDayVals,backgroundColor:'rgba(227,73,72,.7)',type:'bar'}
-    ]},
-    options:{...baseOpts,plugins:{legend:{display:true,labels:{color:TICK}}},
-      scales:{x:{grid:{display:false},ticks:{color:TICK,maxRotation:45}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v)}}}}});
+    data:{labels:ddL,datasets:[
+      {label:'P&L do dia',data:ddT,backgroundColor:ddT.map(v=>v>=0?'rgba(27,175,122,.4)':'rgba(227,73,72,.4)')},
+      {label:'Drawdown máx',data:ddV,backgroundColor:'rgba(227,73,72,.7)'}
+    ]},options:{...baseOpts,plugins:{legend:{display:true,labels:{color:TICK}}},scales:{x:{grid:{display:false},ticks:{color:TICK,maxRotation:45}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v)}}}}});
 
-  // Peak return chart — how much given back after peak
-  const peakLabels=s.dayDetail.map(d=>d.date.slice(0,5));
-  const peakVals=s.dayDetail.map(d=>-d.bestAfter);
+  const pkV=s.dayDetail.map(d=>-d.bestAfter);
   if(charts.peak) charts.peak.destroy();
   charts.peak=new Chart(document.getElementById('peak-chart'),{type:'bar',
-    data:{labels:peakLabels,datasets:[{data:peakVals,backgroundColor:peakVals.map(v=>v<0?RC:'rgba(100,100,100,.3)')}]},
+    data:{labels:ddL,datasets:[{data:pkV,backgroundColor:pkV.map(v=>v<0?RC:'rgba(100,100,100,.25)')}]},
     options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK,maxRotation:45}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v)}}}}});
 
-  // Recovery cards
+  // Recovery cards — FIXED: tip() only in label div, never in class attribute
   const pct75Rec=s.recoveryTimes.length?[...s.recoveryTimes].sort((a,b)=>a-b)[Math.floor(s.recoveryTimes.length*0.75)]:0;
   document.getElementById('recovery-cards').innerHTML=`
-    <div class="qcard ${s.avgRecovery<10?'g':'r'} ${tip('Tempo médio de recuperação','Número médio de operações necessárias para recuperar o valor de uma perda individual. Quanto menor, mais resiliente é a estratégia.')}">
-      <div class="qcard-lbl">Recuperação média ${tip('Recuperação média','Operações necessárias em média para recuperar uma perda.')}</div>
+    <div class="qcard ${s.avgRecovery<10?'g':'r'}">
+      <div class="qcard-lbl">Recuperação média ${tip('Tempo médio de recuperação','Número médio de operações para recuperar o valor de uma perda. Quanto menor, mais resiliente é a estratégia.')}</div>
       <div class="qcard-val">${s.avgRecovery.toFixed(1)} ops</div>
       <div class="qcard-sub">para recuperar uma perda</div>
     </div>
     <div class="qcard a">
-      <div class="qcard-lbl">Recuperação mediana</div>
+      <div class="qcard-lbl">Recuperação mediana ${tip('Mediana de recuperação','50% das perdas foram recuperadas em até este número de operações.')}</div>
       <div class="qcard-val">${s.pct50Recovery} ops</div>
-      <div class="qcard-sub">50% das perdas recuperadas até aqui</div>
+      <div class="qcard-sub">50% das perdas recuperadas aqui</div>
     </div>
-    <div class="qcard r">
-      <div class="qcard-lbl">Recuperação p75</div>
+    <div class="qcard a">
+      <div class="qcard-lbl">Recuperação p75 ${tip('Percentil 75 de recuperação','75% das perdas foram recuperadas em até este número de operações.')}</div>
       <div class="qcard-val">${pct75Rec} ops</div>
-      <div class="qcard-sub">75% das perdas recuperadas até aqui</div>
+      <div class="qcard-sub">75% das perdas recuperadas aqui</div>
     </div>
     <div class="qcard r">
-      <div class="qcard-lbl">Pior recuperação</div>
+      <div class="qcard-lbl">Pior recuperação ${tip('Pior recuperação','A maior sequência de operações necessária para recuperar uma única perda no histórico. Indica o pior cenário de resilência.')}</div>
       <div class="qcard-val">${s.maxRecovery} ops</div>
-      <div class="qcard-sub">maior seq. necessária</div>
+      <div class="qcard-sub">maior sequência necessária</div>
     </div>`;
 
-  // Recovery distribution
-  const recMax=Math.min(60,s.maxRecovery||60);
-  const recBins=10; const recBsz=Math.max(1,recMax/recBins);
-  const recCounts=Array(recBins).fill(0);
-  s.recoveryTimes.forEach(r=>{const i=Math.min(Math.floor(r/recBsz),recBins-1);recCounts[i]++;});
-  const recLabels=Array(recBins).fill(0).map((_,i)=>Math.round(i*recBsz)+'-'+Math.round((i+1)*recBsz)+'ops');
+  const recMax=Math.min(60,s.maxRecovery||30);
+  const rBins=10,rBsz=Math.max(1,recMax/rBins);
+  const rC=Array(rBins).fill(0);
+  s.recoveryTimes.forEach(r=>{const i=Math.min(Math.floor(r/rBsz),rBins-1);rC[i]++;});
+  const rL=Array(rBins).fill(0).map((_,i)=>`${Math.round(i*rBsz)}-${Math.round((i+1)*rBsz)}`);
   if(charts.recovery) charts.recovery.destroy();
   charts.recovery=new Chart(document.getElementById('recovery-chart'),{type:'bar',
-    data:{labels:recLabels,datasets:[{data:recCounts,backgroundColor:recLabels.map((_,i)=>i<3?GC:i<6?AC:RC)}]},
+    data:{labels:rL,datasets:[{data:rC,backgroundColor:rC.map((_,i)=>i<3?GC:i<6?AC:RC)}]},
     options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK,maxRotation:45}},y:{grid:{color:GRID},ticks:{color:TICK}}}}});
 
-  // Marginal value per contract
-  const margLabels=s.qtdStats.map(q=>q.qtd+'x');
-  const margVals=s.qtdStats.map(q=>Math.round(q.perContract));
+  // Marginal chart
+  const margL=s.qtdStats.map(q=>q.qtd+'x'),margV=s.qtdStats.map(q=>Math.round(q.perContract));
   if(charts.marginal) charts.marginal.destroy();
   charts.marginal=new Chart(document.getElementById('marginal-chart'),{type:'bar',
-    data:{labels:margLabels,datasets:[{data:margVals,backgroundColor:margVals.map(v=>v>=0?GC:RC)}]},
-    options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`R$${c.raw}/contrato (${s.qtdStats[c.dataIndex].n} ops, WR ${(s.qtdStats[c.dataIndex].wr*100).toFixed(0)}%)`}}},
-      scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
+    data:{labels:margL,datasets:[{data:margV,backgroundColor:margV.map(v=>v>=0?GC:RC)}]},
+    options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
 }
 
-// ─── Monte Carlo ──────────────────────────────────────
+// ─── Research Tab ─────────────────────────────────────
+function renderResearch(s){
+  const confInt=1.96/Math.sqrt(s.n);
+
+  // Rolling metrics
+  const rL=s.rollingWR.map((_,i)=>`${i+20}`);
+  if(charts.rollingWR) charts.rollingWR.destroy();
+  charts.rollingWR=new Chart(document.getElementById('rolling-wr-chart'),{type:'line',
+    data:{labels:rL,datasets:[
+      {data:s.rollingWR.map(v=>+(v*100).toFixed(1)),borderColor:'#2a78d6',borderWidth:2,pointRadius:0,fill:false,tension:0.3},
+      {data:Array(rL.length).fill(50),borderColor:'rgba(255,255,255,.15)',borderDash:[4,4],borderWidth:1,pointRadius:0,fill:false}
+    ]},options:{...baseOpts,plugins:{legend:{display:false}},scales:{x:{display:false},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'%'},min:0,max:100}}}});
+
+  if(charts.rollingExp) charts.rollingExp.destroy();
+  charts.rollingExp=new Chart(document.getElementById('rolling-exp-chart'),{type:'bar',
+    data:{labels:rL,datasets:[{data:s.rollingExp.map(v=>+v.toFixed(0)),backgroundColor:s.rollingExp.map(v=>v>=0?GC:RC)}]},
+    options:{...baseOpts,scales:{x:{display:false},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
+
+  const lastWR=s.rollingWR[s.rollingWR.length-1]||0,firstWR=s.rollingWR[0]||0;
+  const lastExp=s.rollingExp[s.rollingExp.length-1]||0;
+  document.getElementById('rolling-cards').innerHTML=`
+    <div class="qcard ${s.edgeTrend>0?'g':'r'}">
+      <div class="qcard-lbl">Tendência do edge ${tip('Tendência do edge','Compara expectativa média das últimas 4 janelas vs as primeiras 4. Positivo = edge melhorando. Negativo = estratégia degradando.')}</div>
+      <div class="qcard-val">${s.edgeTrend>0?'▲ Melhorando':'▼ Degradando'}</div>
+      <div class="qcard-sub">${fmtR(s.edgeTrend)}/op de diferença</div>
+    </div>
+    <div class="qcard ${lastWR>=0.5?'g':'r'}">
+      <div class="qcard-lbl">WR rolling atual ${tip('Win rate rolling','Win rate das últimas 20 operações. Mais relevante que o histórico total para avaliar o estado atual da estratégia.')}</div>
+      <div class="qcard-val">${(lastWR*100).toFixed(1)}%</div>
+      <div class="qcard-sub">vs ${(firstWR*100).toFixed(1)}% no início</div>
+    </div>
+    <div class="qcard ${lastExp>=0?'g':'r'}">
+      <div class="qcard-lbl">Expectativa rolling atual ${tip('Expectativa rolling','Expectativa das últimas 20 operações. Use como sinal de alerta: se cair abaixo de zero, considere pausar.')}</div>
+      <div class="qcard-val">${fmtR(lastExp)}/op</div>
+      <div class="qcard-sub">últimas 20 operações</div>
+    </div>`;
+
+  // Statistical moments
+  document.getElementById('moments-cards').innerHTML=`
+    <div class="qcard ${Math.abs(s.skewness)<0.5?'g':'a'}">
+      <div class="qcard-lbl">Assimetria (Skewness) ${tip('Skewness','Mede se a distribuição é simétrica. Negativo = cauda longa de perdas. Positivo = cauda longa de ganhos. |valor| < 0.5 é aproximadamente simétrico.','Σ((r-μ)³) / (n·σ³)')}</div>
+      <div class="qcard-val">${s.skewness.toFixed(3)}</div>
+      <div class="qcard-sub">${s.skewness<-0.3?'Cauda de perdas pesada':s.skewness>0.3?'Cauda de ganhos pesada':'Aproximadamente simétrico'}</div>
+    </div>
+    <div class="qcard ${s.exKurtosis>1?'r':s.exKurtosis<-0.5?'a':'g'}">
+      <div class="qcard-lbl">Curtose excessiva ${tip('Kurtosis','Kurtosis > 0 = caudas mais pesadas que o normal = eventos extremos mais frequentes que o VaR paramétrico prevê. Estratégia precisa de capital buffer adicional.','Σ((r-μ)⁴)/(n·σ⁴) − 3')}</div>
+      <div class="qcard-val">${s.exKurtosis.toFixed(3)}</div>
+      <div class="qcard-sub">${s.exKurtosis>1?'Caudas pesadas — VaR subestimado':s.exKurtosis<-0.5?'Distribuição achatada':'Próximo do normal'}</div>
+    </div>
+    <div class="qcard ${s.jbStat<6?'g':'r'}">
+      <div class="qcard-lbl">Jarque-Bera ${tip('Teste Jarque-Bera','Testa formalmente se a distribuição é normal. Valor > 6 rejeita normalidade com 95% de confiança. Se rejeitado, use sempre VaR histórico, nunca paramétrico.','n/6 · (S² + K²/4)')}</div>
+      <div class="qcard-val">${s.jbStat.toFixed(2)}</div>
+      <div class="qcard-sub">${s.jbStat<6?'Não rejeita normalidade':'Rejeita normalidade (p<5%)'}</div>
+    </div>
+    <div class="qcard b">
+      <div class="qcard-lbl">Desvio padrão ${tip('Desvio padrão por operação','Dispersão dos resultados. Quanto maior, mais capital necessário para sobreviver à variância. Usado no cálculo do Kelly e do Sharpe.','√(Σ(r-μ)²/n)')}</div>
+      <div class="qcard-val">${fmtR(s.stdDev)}</div>
+      <div class="qcard-sub">por operação</div>
+    </div>`;
+
+  // QQ Plot
+  if(charts.qq) charts.qq.destroy();
+  charts.qq=new Chart(document.getElementById('qq-chart'),{type:'scatter',
+    data:{datasets:[
+      {data:s.qqData.map(p=>({x:p.theoretical,y:p.empirical})),backgroundColor:'rgba(42,120,214,.6)',pointRadius:3,label:'Seus resultados'},
+      {data:s.qqData.map(p=>({x:p.theoretical,y:p.theoretical})),borderColor:'rgba(255,255,255,.2)',type:'line',pointRadius:0,borderWidth:1,fill:false,label:'Normal perfeita'}
+    ]},options:{...baseOpts,plugins:{legend:{display:true,labels:{color:TICK}}},
+      scales:{x:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v)},title:{display:true,text:'Quantil teórico (normal)',color:TICK}},
+        y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v)},title:{display:true,text:'Quantil empírico',color:TICK}}}}});
+
+  // ACF
+  if(charts.acf) charts.acf.destroy();
+  charts.acf=new Chart(document.getElementById('acf-chart'),{type:'bar',
+    data:{labels:s.acf.map((_,i)=>`lag ${i+1}`),datasets:[
+      {data:s.acf.map(v=>+v.toFixed(3)),backgroundColor:s.acf.map(v=>Math.abs(v)>confInt?(v>0?BC:RC):'rgba(100,100,100,.4)')},
+      {data:Array(10).fill(confInt),type:'line',borderColor:'rgba(237,161,0,.5)',borderDash:[4,3],pointRadius:0,fill:false,borderWidth:1},
+      {data:Array(10).fill(-confInt),type:'line',borderColor:'rgba(237,161,0,.5)',borderDash:[4,3],pointRadius:0,fill:false,borderWidth:1}
+    ]},options:{...baseOpts,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK},min:-1,max:1}}}});
+
+  if(charts.momentum) charts.momentum.destroy();
+  const nextAfterWin=s.trades.filter((_,i)=>i>0&&s.trades[i-1].resultado>0).map(t=>t.resultado);
+  const nextAfterLoss=s.trades.filter((_,i)=>i>0&&s.trades[i-1].resultado<0).map(t=>t.resultado);
+  const avgNW=nextAfterWin.length?nextAfterWin.reduce((a,b)=>a+b,0)/nextAfterWin.length:0;
+  const avgNL=nextAfterLoss.length?nextAfterLoss.reduce((a,b)=>a+b,0)/nextAfterLoss.length:0;
+  charts.momentum=new Chart(document.getElementById('momentum-chart'),{type:'bar',
+    data:{labels:['Após gain','Após loss'],datasets:[{data:[+avgNW.toFixed(0),+avgNL.toFixed(0)],backgroundColor:[GC,RC]}]},
+    options:{...baseOpts,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
+
+  const lag1=s.acf[0]||0;
+  document.getElementById('acf-cards').innerHTML=`
+    <div class="qcard ${Math.abs(lag1)>confInt?(lag1<0?'a':'b'):'g'}">
+      <div class="qcard-lbl">Autocorrelação lag-1 ${tip('Autocorrelação lag-1','Correlação do resultado com o resultado imediatamente anterior. Negativo forte = reversão à média (após ganho, tende a vir perda). Positivo = momentum. Barras coloridas no gráfico = significativas (fora do IC 95%).')}</div>
+      <div class="qcard-val">${lag1.toFixed(3)}</div>
+      <div class="qcard-sub">${Math.abs(lag1)>confInt?(lag1<0?'Reversão à média significativa':'Momentum significativo'):'Não significativo'}</div>
+    </div>
+    <div class="qcard ${s.postLossWR<s.winRate-0.05?'r':'g'}">
+      <div class="qcard-lbl">WR após loss ${tip('Win rate após loss','Se muito menor que o WR geral, indica viés emocional após perdas — você opera diferente quando está no vermelho.')}</div>
+      <div class="qcard-val">${pct(s.postLossWR)}</div>
+      <div class="qcard-sub">vs ${pct(s.winRate)} geral</div>
+    </div>
+    <div class="qcard ${s.postWinWR>s.winRate+0.05?'b':s.postWinWR<s.winRate-0.05?'a':'g'}">
+      <div class="qcard-lbl">WR após gain ${tip('Win rate após gain','Acima do WR geral pode indicar overconfidence. Abaixo pode indicar cautela excessiva ou reversão à média natural.')}</div>
+      <div class="qcard-val">${pct(s.postWinWR)}</div>
+      <div class="qcard-sub">vs ${pct(s.winRate)} geral</div>
+    </div>`;
+
+  // First trade of day
+  if(charts.firstTrade) charts.firstTrade.destroy();
+  charts.firstTrade=new Chart(document.getElementById('first-trade-chart'),{type:'bar',
+    data:{labels:['1ª op = Gain','1ª op = Loss'],datasets:[{data:[+s.avgRestWin.toFixed(0),+s.avgRestLoss.toFixed(0)],backgroundColor:[GC,RC]}]},
+    options:{...baseOpts,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+v}}}}});
+
+  if(charts.firstWR) charts.firstWR.destroy();
+  charts.firstWR=new Chart(document.getElementById('first-wr-chart'),{type:'bar',
+    data:{labels:['1ª op = Gain','1ª op = Loss'],datasets:[{data:[+(s.dayWRafterFirstWin*100).toFixed(1),+(s.dayWRafterFirstLoss*100).toFixed(1)],backgroundColor:[GC,RC]}]},
+    options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'%'},min:0,max:100}}}});
+
+  document.getElementById('first-trade-cards').innerHTML=`
+    <div class="qcard ${s.avgRestWin>0?'g':'r'}">
+      <div class="qcard-lbl">Resto do dia após 1ª gain ${tip('Preditor: primeira op ganha','P&L médio do restante do dia quando a primeira operação foi um ganho. Mostra se uma boa abertura prediz um bom dia.')}</div>
+      <div class="qcard-val">${fmtR(s.avgRestWin)}</div>
+      <div class="qcard-sub">${s.firstWinDays} dias · WR do dia ${pct(s.dayWRafterFirstWin)}</div>
+    </div>
+    <div class="qcard ${s.avgRestLoss>0?'g':'r'}">
+      <div class="qcard-lbl">Resto do dia após 1ª loss ${tip('Preditor: primeira op perde','P&L médio do restante do dia quando a primeira operação foi uma perda. Se negativo, considere parar após a primeira perda do dia.')}</div>
+      <div class="qcard-val">${fmtR(s.avgRestLoss)}</div>
+      <div class="qcard-sub">${s.firstLossDays} dias · WR do dia ${pct(s.dayWRafterFirstLoss)}</div>
+    </div>
+    <div class="qcard ${s.dayWRafterFirstWin>s.dayWRafterFirstLoss+0.1?'g':'a'}">
+      <div class="qcard-lbl">Poder preditivo da 1ª op ${tip('Poder preditivo','Diferença de WR do dia condicionado à 1ª operação. Alta diferença = a primeira operação é um forte indicador do resultado do dia.')}</div>
+      <div class="qcard-val">${pct(Math.abs(s.dayWRafterFirstWin-s.dayWRafterFirstLoss))}</div>
+      <div class="qcard-sub">diferença de WR do dia</div>
+    </div>`;
+
+  // Alpha decomposition
+  document.getElementById('alpha-cards').innerHTML=`
+    <div class="qcard ${s.qtdCorr>0.2?'g':s.qtdCorr<-0.2?'r':'a'}">
+      <div class="qcard-lbl">Alpha de Sizing ${tip('Alpha de Sizing','Correlação de Pearson entre tamanho da posição e resultado. Positivo = você opera maior quando tem melhor leitura do mercado. Negativo = opera maior nos piores momentos (sinal de revenge sizing).')}</div>
+      <div class="qcard-val">${s.qtdCorr.toFixed(3)}</div>
+      <div class="qcard-sub">${s.qtdCorr>0.2?'Sizing positivo: maior posição = mais ganho':s.qtdCorr<-0.2?'⚠ Sizing negativo: maior posição = mais perda':'Sem correlação significativa'}</div>
+    </div>
+    <div class="qcard ${s.durCorr<-0.2?'r':s.durCorr>0.2?'g':'a'}">
+      <div class="qcard-lbl">Alpha de Holding ${tip('Alpha de Holding','Correlação entre tempo na posição e resultado. Negativo = quanto mais você espera, pior fica (sinal de segurar perdas). Positivo = segurar mais tempo paga.')}</div>
+      <div class="qcard-val">${s.durCorr.toFixed(3)}</div>
+      <div class="qcard-sub">${s.durCorr<-0.2?'⚠ Segurar mais destrói resultado':s.durCorr>0.2?'Segurar mais gera resultado':'Sem correlação com duração'}</div>
+    </div>
+    <div class="qcard b">
+      <div class="qcard-lbl">Dispersão de Timing ${tip('Dispersão de Timing','Desvio padrão das horas de entrada. Menor = operações concentradas em janelas específicas (timing seletivo). Maior = opera o dia todo sem critério claro de horário.')}</div>
+      <div class="qcard-val">${s.hourStd.toFixed(2)}h</div>
+      <div class="qcard-sub">${s.hourStd<2?'Timing seletivo e concentrado':s.hourStd>3?'Opera disperso ao longo do dia':'Concentração moderada'}</div>
+    </div>`;
+
+  if(charts.sizingCorr) charts.sizingCorr.destroy();
+  const scP=s.trades.filter(t=>t.qtd>0).map(t=>({x:t.qtd,y:t.resultado}));
+  charts.sizingCorr=new Chart(document.getElementById('sizing-corr-chart'),{type:'scatter',
+    data:{datasets:[{data:scP,backgroundColor:scP.map(p=>p.y>=0?'rgba(27,175,122,.5)':'rgba(227,73,72,.5)'),pointRadius:4}]},
+    options:{...baseOpts,scales:{x:{grid:{color:GRID},ticks:{color:TICK},title:{display:true,text:'Contratos',color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>'R$'+Math.round(v)},title:{display:true,text:'Resultado (R$)',color:TICK}}}}});
+
+  // Advanced ratios
+  document.getElementById('ratios-cards').innerHTML=`
+    <div class="qcard ${s.sortino>1?'g':s.sortino>0?'a':'r'}">
+      <div class="qcard-lbl">Sortino Ratio ${tip('Sortino Ratio','Como o Sharpe, mas penaliza apenas a volatilidade das perdas (downside deviation). Mais relevante que o Sharpe para estratégias assimétricas. > 1.0 é bom, > 2.0 excelente.','(μ/σ_downside) × √252')}</div>
+      <div class="qcard-val">${s.sortino.toFixed(2)}</div>
+      <div class="qcard-sub">${s.sortino>2?'Excelente':s.sortino>1?'Bom':s.sortino>0?'Marginal':'Negativo'}</div>
+    </div>
+    <div class="qcard ${s.calmar>1?'g':s.calmar>0.5?'a':'r'}">
+      <div class="qcard-lbl">Calmar Ratio ${tip('Calmar Ratio','Retorno anual esperado dividido pelo drawdown máximo histórico. Mostra quanto retorno você obtém por unidade de drawdown sofrido. > 1.0 é considerado bom.','Retorno anual / Max Drawdown')}</div>
+      <div class="qcard-val">${s.calmar.toFixed(2)}</div>
+      <div class="qcard-sub">${s.calmar>1?'Bom':s.calmar>0.5?'Aceitável':'Drawdown alto vs retorno'}</div>
+    </div>
+    <div class="qcard ${s.ulcer<15?'g':s.ulcer<30?'a':'r'}">
+      <div class="qcard-lbl">Ulcer Index ${tip('Ulcer Index','Mede quanto tempo você passa em drawdown e quão fundo. Penaliza drawdowns prolongados — uma queda pequena que dura semanas é pior que uma queda grande rapidamente recuperada.','√(Σ DD²% / n)')}</div>
+      <div class="qcard-val">${s.ulcer.toFixed(1)}%</div>
+      <div class="qcard-sub">${s.ulcer<15?'Baixo — recuperação rápida':s.ulcer<30?'Moderado':'Alto — longo tempo em drawdown'}</div>
+    </div>
+    <div class="qcard ${s.sharpe>1?'g':s.sharpe>0?'a':'r'}">
+      <div class="qcard-lbl">Sharpe Ratio ${tip('Sharpe Ratio','Retorno por unidade de risco total. Penaliza ganhos e perdas voláteis igualmente. Compare sempre com o Sortino para estratégias assimétricas.','(μ/σ) × √252')}</div>
+      <div class="qcard-val">${s.sharpe.toFixed(2)}</div>
+      <div class="qcard-sub">vs Sortino ${s.sortino.toFixed(2)}</div>
+    </div>`;
+
+  // Conditional stress
+  const stE=Object.entries(s.stressStats).filter(([,v])=>v.n>=3);
+  document.getElementById('stress-cards').innerHTML=stE.map(([k,v])=>`
+    <div class="qcard ${v.var95<-500?'r':v.var95<-200?'a':'g'}">
+      <div class="qcard-lbl">${v.label} (${v.n} ops) ${tip('VaR condicional: '+v.label,'VaR 95% e CVaR calculados apenas para operações neste contexto. Permite identificar em quais situações o risco é maior do que você pensa.')}</div>
+      <div class="qcard-val">${fmtR(v.var95)}</div>
+      <div class="qcard-sub">VaR95 · CVaR ${fmtR(v.cvar)} · WR ${pct(v.wr)}</div>
+      <div class="qcard-formula">exp ${fmtR(v.avg)}/op</div>
+    </div>`).join('');
+
+  // Slippage
+  const slipBadge=document.getElementById('slippage-badge');
+  if(s.slippageData&&s.slippageData.length>0){
+    slipBadge.textContent='(Formato B — dados disponíveis)';
+    slipBadge.style.color='var(--green)';
+    const slipByHour={},slipByQtd={};
+    s.slippageData.forEach(t=>{
+      if(t.hour!=null){if(!slipByHour[t.hour])slipByHour[t.hour]={sum:0,n:0};slipByHour[t.hour].sum+=t.slippage;slipByHour[t.hour].n++;}
+      if(t.qtd>0){const q=t.qtd;if(!slipByQtd[q])slipByQtd[q]={sum:0,n:0};slipByQtd[q].sum+=t.slippage;slipByQtd[q].n++;}
+    });
+    const shE=Object.entries(slipByHour).sort((a,b)=>+a[0]-+b[0]);
+    const sqE=Object.entries(slipByQtd).sort((a,b)=>+a[0]-+b[0]);
+    if(charts.slipHora) charts.slipHora.destroy();
+    const shA=shE.map(([,v])=>+(v.sum/v.n).toFixed(1));
+    charts.slipHora=new Chart(document.getElementById('slip-hora-chart'),{type:'bar',data:{labels:shE.map(([h])=>h+'h'),datasets:[{data:shA,backgroundColor:shA.map(v=>v<=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+' pts'}}}}});
+    if(charts.slipQtd) charts.slipQtd.destroy();
+    const sqA=sqE.map(([,v])=>+(v.sum/v.n).toFixed(1));
+    charts.slipQtd=new Chart(document.getElementById('slip-qtd-chart'),{type:'bar',data:{labels:sqE.map(([q])=>q+'x'),datasets:[{data:sqA,backgroundColor:sqA.map(v=>v<=0?GC:RC)}]},options:{...baseOpts,scales:{x:{grid:{display:false},ticks:{color:TICK}},y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+' pts'}}}}});
+    const avgSlip=s.slippageData.reduce((a,t)=>a+t.slippage,0)/s.slippageData.length;
+    document.getElementById('slip-cards').innerHTML=`
+      <div class="qcard ${avgSlip<=0?'g':'r'}">
+        <div class="qcard-lbl">Slippage médio ${tip('Slippage médio','Diferença média entre preço da ordem (Preço) e preço real de execução (Preço Médio). Negativo = execução favorável. Positivo = você paga mais (ou vende menos) do que pretendia.')}</div>
+        <div class="qcard-val">${avgSlip.toFixed(1)} pts</div>
+        <div class="qcard-sub">${avgSlip<=0?'Execução favorável em média':'Pagando spread/impacto'}</div>
+      </div>
+      <div class="qcard r">
+        <div class="qcard-lbl">Custo estimado de slippage ${tip('Custo total de slippage','Slippage médio × número de operações × R$0,20 por ponto. Representa o custo invisível de execução que não aparece diretamente no P&L mas está embutido nos preços de fill.')}</div>
+        <div class="qcard-val">${fmtR(Math.abs(avgSlip*s.slippageData.length*0.20))}</div>
+        <div class="qcard-sub">${avgSlip.toFixed(1)} pts × ${s.slippageData.length} ops × R$0,20</div>
+      </div>`;
+  } else {
+    slipBadge.textContent='(disponível apenas no formato Lista de Ordens)';
+    document.getElementById('slippage-content').innerHTML=`<div class="alert info"><span class="alert-icon">ℹ️</span><div><span class="alert-title">Análise de slippage requer o formato Lista de Ordens</span><span class="alert-msg">Carregue o CSV via Relatórios → Lista de Ordens no Profit Pro para ver slippage por hora, tamanho e direção.</span></div></div>`;
+  }
+}
+
+// ─── Market Data (Yahoo Finance + CSV upload) ─────────
+let marketDataCache = null;
+
+async function fetchYahooWIN(startDate, endDate) {
+  // Yahoo Finance: ^BVSP (Ibovespa proxy) or WIN=F
+  // We use a CORS-friendly approach via Yahoo's query API
+  const symbols = ['WIN=F', '^BVSP'];
+  const start = Math.floor(new Date(startDate).getTime() / 1000) - 86400 * 5;
+  const end = Math.floor(new Date(endDate).getTime() / 1000) + 86400 * 2;
+
+  for (const sym of symbols) {
+    try {
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&period1=${start}&period2=${end}&events=history`;
+      const r = await fetch(url, { signal: AbortSignal.timeout(6000) });
+      if (!r.ok) continue;
+      const data = await r.json();
+      const chart = data?.chart?.result?.[0];
+      if (!chart) continue;
+      const ts = chart.timestamps || chart.timestamp;
+      const closes = chart.indicators?.quote?.[0]?.close;
+      const highs = chart.indicators?.quote?.[0]?.high;
+      const lows = chart.indicators?.quote?.[0]?.low;
+      const volumes = chart.indicators?.quote?.[0]?.volume;
+      if (!ts || !closes) continue;
+      const parsed = ts.map((t, i) => ({
+        date: new Date(t * 1000).toLocaleDateString('pt-BR'),
+        dateObj: new Date(t * 1000),
+        close: closes[i],
+        high: highs?.[i],
+        low: lows?.[i],
+        volume: volumes?.[i],
+      })).filter(d => d.close != null);
+      if (parsed.length > 0) return { data: parsed, source: 'Yahoo Finance (' + sym + ')', symbol: sym };
+    } catch (e) { continue; }
+  }
+  return null;
+}
+
+function parseMarketCSV(text) {
+  // Accept Profit Pro candle export or generic OHLCV CSV
+  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim());
+  if (lines.length < 3) return null;
+  const sep = lines[0].includes(';') ? ';' : ',';
+  const hdrs = lines[0].split(sep).map(h => h.trim().toLowerCase());
+
+  const findCol = (...names) => {
+    for (const n of names) {
+      const i = hdrs.findIndex(h => h.includes(n));
+      if (i >= 0) return i;
+    }
+    return -1;
+  };
+
+  const iDate = findCol('data', 'date', 'dia');
+  const iClose = findCol('fech', 'close', 'último', 'ultimo', 'encerr');
+  const iHigh = findCol('máx', 'max', 'high', 'alta');
+  const iLow = findCol('mín', 'min', 'low', 'baixa');
+  const iVol = findCol('vol', 'volume');
+  if (iDate < 0 || iClose < 0) return null;
+
+  const parsed = [];
+  for (let i = 1; i < lines.length; i++) {
+    const cs = lines[i].split(sep);
+    const raw = cs[iDate]?.trim();
+    const cl = parseFloat((cs[iClose] || '').trim().replace(/\./g, '').replace(',', '.'));
+    if (!raw || isNaN(cl)) continue;
+    const m = raw.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+    if (!m) continue;
+    const dateObj = new Date(+m[3], +m[2] - 1, +m[1]);
+    parsed.push({
+      date: raw,
+      dateObj,
+      close: cl,
+      high: iHigh >= 0 ? parseFloat((cs[iHigh] || '').trim().replace(/\./g, '').replace(',', '.')) : cl,
+      low: iLow >= 0 ? parseFloat((cs[iLow] || '').trim().replace(/\./g, '').replace(',', '.')) : cl,
+      volume: iVol >= 0 ? parseFloat((cs[iVol] || '').replace(/\./g, '').replace(',', '.')) : null,
+    });
+  }
+  return parsed.length > 3 ? { data: parsed, source: 'CSV carregado', symbol: 'WIN' } : null;
+}
+
+async function loadMarketData(trades) {
+  const bar = document.getElementById('regime-status-bar');
+  const hint = document.getElementById('regime-upload-hint');
+  bar.style.display = 'flex';
+
+  if (marketDataCache) {
+    renderRegimeCharts(statsCache, marketDataCache);
+    return;
+  }
+
+  // Determine date range from trades
+  const dates = trades.map(t => t.dateObj).filter(Boolean).sort((a, b) => a - b);
+  if (!dates.length) { bar.className = 'regime-status warn'; bar.innerHTML = '⚠ Sem datas nos trades para buscar dados de mercado'; return; }
+  const startDate = new Date(dates[0]); startDate.setDate(startDate.getDate() - 10);
+  const endDate = new Date(dates[dates.length - 1]); endDate.setDate(endDate.getDate() + 5);
+
+  bar.className = 'regime-status loading';
+  bar.innerHTML = '⏳ Buscando dados do WIN no Yahoo Finance...';
+  hint.style.display = 'none';
+
+  const result = await fetchYahooWIN(startDate.toISOString().slice(0, 10), endDate.toISOString().slice(0, 10));
+
+  if (result) {
+    marketDataCache = result;
+    bar.className = 'regime-status ok';
+    bar.innerHTML = `✓ Dados carregados: ${result.source} · ${result.data.length} sessões`;
+    document.getElementById('market-badge').textContent = '📊 ' + result.source;
+    document.getElementById('market-badge').style.display = '';
+    document.getElementById('market-data-section').style.display = 'block';
+    hint.style.display = 'none';
+    renderRegimeCharts(statsCache, result);
+  } else {
+    bar.className = 'regime-status warn';
+    bar.innerHTML = '⚠ Yahoo Finance indisponível — use o botão abaixo para carregar um CSV de candles. A análise de regime pelos fills internos já está disponível.';
+    hint.style.display = 'block';
+    renderRegimeFromFills(statsCache);
+  }
+}
+
+// ─── Regime Tab render ─────────────────────────────────
+function renderRegime(s) {
+  if (!s) return;
+  // Always render internal (fills-based) regime first
+  renderRegimeFromFills(s);
+  // Then try to load external data
+  loadMarketData(s.trades);
+}
+
+function renderRegimeFromFills(s) {
+  if (!s.regimeData || s.regimeData.length === 0) return;
+
+  // Summary cards
+  const medV = s.medVol;
+  const highDays = s.regimeData.filter(d => d.vol > medV);
+  const lowDays = s.regimeData.filter(d => d.vol <= medV);
+  const wrHigh = highDays.length ? highDays.reduce((a, d) => a + d.wr, 0) / highDays.length : 0;
+  const wrLow = lowDays.length ? lowDays.reduce((a, d) => a + d.wr, 0) / lowDays.length : 0;
+
+  document.getElementById('regime-summary-cards').innerHTML = `
+    <div class="qcard ${s.avgPnlHighVol > 0 ? 'g' : 'r'}">
+      <div class="qcard-lbl">P&L médio — alta volatilidade ${tip('Regime de alta vol (intra)', 'Dias onde a dispersão dos seus preços de fill foi acima da mediana histórica. Proxy para mercado direcional/tendência. Calculado a partir dos seus próprios preços de execução.')}</div>
+      <div class="qcard-val">${fmtR(s.avgPnlHighVol)}</div>
+      <div class="qcard-sub">${highDays.length} sessões · WR ${(wrHigh * 100).toFixed(0)}%</div>
+    </div>
+    <div class="qcard ${s.avgPnlLowVol > 0 ? 'g' : 'r'}">
+      <div class="qcard-lbl">P&L médio — baixa volatilidade ${tip('Regime de baixa vol (intra)', 'Dias onde o mercado ficou mais comprimido. Estratégias de breakout costumam sofrer. Calculado a partir dos seus fills internos.')}</div>
+      <div class="qcard-val">${fmtR(s.avgPnlLowVol)}</div>
+      <div class="qcard-sub">${lowDays.length} sessões · WR ${(wrLow * 100).toFixed(0)}%</div>
+    </div>
+    <div class="qcard ${s.avgPnlHighVol > s.avgPnlLowVol ? 'g' : 'a'}">
+      <div class="qcard-lbl">Regime favorável ${tip('Regime favorável', 'Em qual tipo de dia sua estratégia gera mais resultado. Diferença alta = você tem forte dependência de regime.')}</div>
+      <div class="qcard-val">${s.avgPnlHighVol > s.avgPnlLowVol ? 'Tendência' : 'Lateralização'}</div>
+      <div class="qcard-sub">diferença de ${fmtR(Math.abs(s.avgPnlHighVol - s.avgPnlLowVol))}/dia</div>
+    </div>
+    <div class="qcard b">
+      <div class="qcard-lbl">Volatilidade mediana (fills) ${tip('Volatilidade de fills', 'Desvio padrão dos preços de execução por dia. Threshold que separa regime de tendência vs lateral.')}</div>
+      <div class="qcard-val">${s.medVol.toFixed(0)} pts</div>
+      <div class="qcard-sub">threshold tendência vs lateral</div>
+    </div>`;
+
+  // Vol by day chart
+  const rdL = s.regimeData.map(d => d.date.slice(0, 5));
+  const rdV = s.regimeData.map(d => +d.vol.toFixed(0));
+  const rdP = s.regimeData.map(d => +d.pnl.toFixed(0));
+  const rdWR = s.regimeData.map(d => +(d.wr * 100).toFixed(0));
+
+  if (charts.regimeVol) charts.regimeVol.destroy();
+  charts.regimeVol = new Chart(document.getElementById('regime-vol-chart'), {
+    type: 'bar',
+    data: { labels: rdL, datasets: [{ data: rdV, backgroundColor: rdV.map(v => v > s.medVol ? BC : 'rgba(100,100,100,.4)'), label: 'Volatilidade (pts)' }] },
+    options: { ...baseOpts, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: TICK, maxRotation: 45 } }, y: { grid: { color: GRID }, ticks: { color: TICK, callback: v => v + ' pts' } } } }
+  });
+
+  if (charts.regimePnl) charts.regimePnl.destroy();
+  charts.regimePnl = new Chart(document.getElementById('regime-pnl-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['Alta vol\n(tendência)', 'Baixa vol\n(lateral)'],
+      datasets: [{ data: [+s.avgPnlHighVol.toFixed(0), +s.avgPnlLowVol.toFixed(0)], backgroundColor: [s.avgPnlHighVol >= 0 ? GC : RC, s.avgPnlLowVol >= 0 ? GC : RC] }]
+    },
+    options: { ...baseOpts, scales: { x: { grid: { display: false }, ticks: { color: TICK } }, y: { grid: { color: GRID }, ticks: { color: TICK, callback: v => 'R$' + v } } } }
+  });
+
+  if (charts.regimeWR) charts.regimeWR.destroy();
+  charts.regimeWR = new Chart(document.getElementById('regime-wr-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['Alta vol\n(tendência)', 'Baixa vol\n(lateral)'],
+      datasets: [{ data: [+(wrHigh * 100).toFixed(1), +(wrLow * 100).toFixed(1)], backgroundColor: [wrHigh >= 0.5 ? GC : RC, wrLow >= 0.5 ? GC : RC] }]
+    },
+    options: { ...baseOpts, scales: { x: { grid: { display: false }, ticks: { color: TICK } }, y: { grid: { color: GRID }, ticks: { color: TICK, callback: v => v + '%' }, min: 0, max: 100 } } }
+  });
+}
+
+function renderRegimeCharts(s, mkt) {
+  if (!mkt || !mkt.data || !mkt.data.length) return;
+  document.getElementById('market-data-section').style.display = 'block';
+
+  const mktData = mkt.data;
+
+  // Price chart
+  if (charts.mktPrice) charts.mktPrice.destroy();
+  charts.mktPrice = new Chart(document.getElementById('market-price-chart'), {
+    type: 'line',
+    data: {
+      labels: mktData.map(d => d.date),
+      datasets: [{ data: mktData.map(d => d.close), borderColor: '#2a78d6', borderWidth: 2, pointRadius: 0, fill: false, tension: 0.2 }]
+    },
+    options: { ...baseOpts, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: TICK, maxRotation: 45, autoSkip: true, maxTicksLimit: 10 } }, y: { grid: { color: GRID }, ticks: { color: TICK, callback: v => v.toLocaleString('pt-BR') } } } }
+  });
+
+  // Cross with our daily PnL: match dates
+  const dayPnl = {};
+  s.dayDetail.forEach(d => { dayPnl[d.date] = d.sum; });
+
+  // Market daily vol (high-low range as vol proxy)
+  const mktVol = mktData.map(d => d.high && d.low ? d.high - d.low : 0);
+  const medMktVol = [...mktVol].sort((a, b) => a - b)[Math.floor(mktVol.length / 2)];
+
+  // For each market day, find our pnl
+  const crossData = mktData.map((d, i) => {
+    const dateStr = d.date;
+    // try to match by date string
+    const pnl = dayPnl[dateStr] ?? null;
+    return { date: dateStr, mktVol: mktVol[i], pnl };
+  }).filter(d => d.pnl !== null);
+
+  // Vol-PnL scatter
+  if (charts.mktVolPnl) charts.mktVolPnl.destroy();
+  charts.mktVolPnl = new Chart(document.getElementById('market-vol-pnl-chart'), {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        data: crossData.map(d => ({ x: d.mktVol, y: d.pnl })),
+        backgroundColor: crossData.map(d => d.pnl >= 0 ? 'rgba(27,175,122,.6)' : 'rgba(227,73,72,.6)'),
+        pointRadius: 5
+      }]
+    },
+    options: {
+      ...baseOpts,
+      scales: {
+        x: { grid: { color: GRID }, ticks: { color: TICK }, title: { display: true, text: 'Volatilidade mercado (H-L pts)', color: TICK } },
+        y: { grid: { color: GRID }, ticks: { color: TICK, callback: v => 'R$' + Math.round(v) }, title: { display: true, text: 'Seu P&L no dia', color: TICK } }
+      }
+    }
+  });
+
+  // Performance by market vol quartile
+  const sorted = [...crossData].sort((a, b) => a.mktVol - b.mktVol);
+  const qSize = Math.max(1, Math.floor(sorted.length / 4));
+  const quartiles = [0, 1, 2, 3].map(q => {
+    const slice = sorted.slice(q * qSize, (q + 1) * qSize);
+    const avg = slice.length ? slice.reduce((a, d) => a + d.pnl, 0) / slice.length : 0;
+    const wr = slice.length ? slice.filter(d => d.pnl > 0).length / slice.length : 0;
+    return { avg, wr, n: slice.length };
+  });
+
+  if (charts.mktQuartile) charts.mktQuartile.destroy();
+  charts.mktQuartile = new Chart(document.getElementById('market-quartile-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['Q1\n(mais lateral)', 'Q2', 'Q3', 'Q4\n(mais vol)'],
+      datasets: [{
+        data: quartiles.map(q => +q.avg.toFixed(0)),
+        backgroundColor: quartiles.map(q => q.avg >= 0 ? GC : RC)
+      }]
+    },
+    options: {
+      ...baseOpts,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `R$${c.raw} · WR ${(quartiles[c.dataIndex].wr * 100).toFixed(0)}% · ${quartiles[c.dataIndex].n} dias` } } },
+      scales: { x: { grid: { display: false }, ticks: { color: TICK } }, y: { grid: { color: GRID }, ticks: { color: TICK, callback: v => 'R$' + v } } }
+    }
+  });
+}
 function runMonteCarlo(){
   if(!statsCache) return;
   const s=statsCache;
@@ -1457,6 +2214,87 @@ dz.addEventListener('drop',e=>{
   const f=e.dataTransfer.files[0];
   if(f){const r=new FileReader();r.onload=ev=>processFile(ev.target.result);r.readAsText(f,'ISO-8859-1');}
 });
+
+// ─── Main flow ─────────────────────────────────────────
+function processFile(text) {
+  const parsed = parseProfitCSV(text);
+  if (!parsed) { document.getElementById('error-msg').style.display = 'block'; return; }
+  document.getElementById('error-msg').style.display = 'none';
+  const { trades, meta, format, formatLabel } = parsed;
+  allTrades = trades; filteredTrades = [...trades];
+
+  const fb = document.getElementById('format-badge');
+  fb.textContent = formatLabel || 'Relatório de Trading';
+  fb.style.background = format === 'B' ? 'var(--bdim)' : 'var(--gdim)';
+  fb.style.borderColor = format === 'B' ? 'var(--bbrd)' : 'var(--gbrd)';
+  fb.style.color = format === 'B' ? '#70abee' : '#5dd4a8';
+  fb.style.display = '';
+
+  if (meta.di || meta.df) {
+    const pb = document.getElementById('period-badge');
+    pb.textContent = (meta.di || '') + (meta.df ? ' → ' + meta.df : '');
+    pb.style.display = '';
+  }
+  document.getElementById('reset-btn').style.display = '';
+  document.getElementById('table-count').textContent = `(${trades.length} operações)`;
+
+  const s = computeStats(trades);
+  statsCache = s;
+
+  document.getElementById('upload-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('footer').style.display = 'block';
+
+  renderAlerts(buildAlerts(s));
+  renderKPIs(s);
+  renderQuant(s);
+  renderCapital(s);
+  renderCharts(s);
+  renderBehavior(s);
+  renderResearch(s);
+  renderTable();
+}
+
+function resetApp() {
+  destroyCharts();
+  allTrades = []; filteredTrades = []; currentPage = 1; statsCache = null; marketDataCache = null;
+  document.getElementById('upload-screen').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('footer').style.display = 'none';
+  document.getElementById('period-badge').style.display = 'none';
+  document.getElementById('format-badge').style.display = 'none';
+  document.getElementById('market-badge').style.display = 'none';
+  document.getElementById('reset-btn').style.display = 'none';
+  document.getElementById('file-input').value = '';
+  document.getElementById('market-file-input-inline').value = '';
+  document.getElementById('market-status-badge').textContent = 'Opcional';
+  document.getElementById('market-status-badge').className = 'market-badge pending';
+  switchTab('visao');
+}
+
+// Market CSV inline upload (inside Regime tab)
+function handleMarketFile(f) {
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    const result = parseMarketCSV(ev.target.result);
+    if (result) {
+      marketDataCache = result;
+      document.getElementById('market-badge').textContent = '📊 CSV carregado';
+      document.getElementById('market-badge').style.display = '';
+      // Update upload screen badge if visible
+      const badge = document.getElementById('market-status-badge');
+      if (badge) { badge.textContent = '✓ ' + f.name.slice(0, 18); badge.className = 'market-badge ok'; }
+      if (statsCache) renderRegime(statsCache);
+    } else {
+      alert('Não foi possível ler o arquivo. Verifique se é um CSV de candles com colunas de data e fechamento.');
+    }
+  };
+  r.readAsText(f, 'ISO-8859-1');
+}
+
+document.getElementById('market-file-input-inline').addEventListener('change', e => handleMarketFile(e.target.files[0]));
+document.getElementById('market-file-input').addEventListener('change', e => handleMarketFile(e.target.files[0]));
 </script>
 </body>
 </html>
