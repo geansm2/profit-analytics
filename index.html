@@ -1704,6 +1704,7 @@ function parseMarketCSV(text) {
   };
 
   const iDate  = findCol('data','date','dia','time','hora');
+  const iOpen  = findCol('aber','open','abertura');
   const iClose = findCol('fech','close','ultim','encerr','last');
   const iHigh  = findCol('max','high','alta');
   const iLow   = findCol('min','low','baixa');
@@ -1733,14 +1734,21 @@ function parseMarketCSV(text) {
     if (!raw || isNaN(cl) || cl <= 0) continue;
     const dateObj = parseDate(raw);
     if (!dateObj) continue;
+    // Also parse time component for correct intraday sorting
+    const tm = raw.match(/(\d{2}):(\d{2})/);
+    if (tm) { dateObj.setHours(+tm[1], +tm[2], 0, 0); }
     rows.push({
       dateObj, dateStr: fmtDate(dateObj), close: cl,
+      open:   iOpen>=0 ? pNum(cs[iOpen]) : cl,
       high:   iHigh>=0 ? pNum(cs[iHigh]) : cl,
       low:    iLow >=0 ? pNum(cs[iLow])  : cl,
       volume: iVol >=0 ? pNum(cs[iVol])  : null,
     });
   }
-  if (rows.length < 3) return null;
+  if (rows.length < 1) return null;
+
+  // Sort ascending by full datetime (handles newest-first exports from Profit Pro)
+  rows.sort((a,b) => a.dateObj - b.dateObj);
 
   // Detect intraday: more than 1.5 rows per unique calendar day on average
   const dayCount = new Set(rows.map(r=>r.dateStr)).size;
@@ -1748,27 +1756,33 @@ function parseMarketCSV(text) {
 
   let daily;
   if (isIntraday) {
-    // Aggregate multiple candles per day → single daily bar
+    // Aggregate multiple candles per day → single OHLC daily bar
     const byDay = {}, dayOrder = [];
     for (const r of rows) {
       if (!byDay[r.dateStr]) { byDay[r.dateStr]=[]; dayOrder.push(r.dateStr); }
-      byDay[r.dateStr].push(r);
+      byDay[r.dateStr].push(r); // rows already sorted ascending
     }
     daily = dayOrder.map(ds => {
-      const dr = byDay[ds].sort((a,b)=>a.dateObj-b.dateObj);
+      const dr = byDay[ds]; // already time-sorted ascending
       return {
-        date: ds, dateObj: dr[0].dateObj,
-        close:  dr[dr.length-1].close,          // last candle of day
-        high:   Math.max(...dr.map(r=>r.high)),  // day's high
-        low:    Math.min(...dr.map(r=>r.low)),   // day's low
+        date: ds,
+        dateObj: dr[0].dateObj,
+        open:   dr[0].open,                      // first candle open
+        close:  dr[dr.length-1].close,            // last candle close
+        high:   Math.max(...dr.map(r=>r.high)),   // day high
+        low:    Math.min(...dr.map(r=>r.low)),     // day low
         volume: dr.reduce((s,r)=>s+(r.volume||0),0)||null,
+        candles: dr,  // keep intraday candles for granular charts
       };
     });
+    // Sort daily by date ascending
+    daily.sort((a,b) => a.dateObj - b.dateObj);
   } else {
-    daily = rows.map(r=>({date:r.dateStr,dateObj:r.dateObj,close:r.close,high:r.high,low:r.low,volume:r.volume}));
+    daily = rows.map(r=>({
+      date:r.dateStr, dateObj:r.dateObj,
+      open:r.open, close:r.close, high:r.high, low:r.low, volume:r.volume,
+    }));
   }
-
-  daily.sort((a,b)=>a.dateObj-b.dateObj);
 
   const freq = isIntraday
     ? ` (${Math.round(rows.length/dayCount)} candles/dia → ${daily.length} dias)`
@@ -2091,16 +2105,73 @@ function renderRegimeCharts(s, mkt) {
 
   const mktData = mkt.data;
 
-  // Price chart
+  // Price chart — smart: shows intraday candles if only 1 day loaded, else daily close line
   if (charts.mktPrice) charts.mktPrice.destroy();
-  charts.mktPrice = new Chart(document.getElementById('market-price-chart'), {
-    type: 'line',
-    data: {
-      labels: mktData.map(d => d.date),
-      datasets: [{ data: mktData.map(d => d.close), borderColor: '#2a78d6', borderWidth: 2, pointRadius: 0, fill: false, tension: 0.2 }]
-    },
-    options: { ...baseOpts, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: TICK, maxRotation: 45, autoSkip: true, maxTicksLimit: 10 } }, y: { grid: { color: GRID }, ticks: { color: TICK, callback: v => v.toLocaleString('pt-BR') } } } }
-  });
+
+  const singleDay = mktData.length === 1 && mktData[0].candles && mktData[0].candles.length > 1;
+
+  if (singleDay) {
+    // Show intraday candlestick as H-L floating bars + close line
+    const candles = mktData[0].candles;
+    const labels = candles.map(c => {
+      const h = c.dateObj.getHours(), m = c.dateObj.getMinutes();
+      return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    });
+    const hlData = candles.map(c => [c.low, c.high]);   // floating bar H-L range
+    const closeData = candles.map(c => c.close);
+    const barColors = candles.map(c => c.close >= (c.open||c.close) ? 'rgba(27,175,122,.5)' : 'rgba(227,73,72,.5)');
+    charts.mktPrice = new Chart(document.getElementById('market-price-chart'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { data: hlData, backgroundColor: barColors, label: 'H-L range', order: 2 },
+          { data: closeData, type: 'line', borderColor: '#2a78d6', borderWidth: 2,
+            pointRadius: 2, fill: false, tension: 0, label: 'Fechamento', order: 1,
+            yAxisID: 'y' }
+        ]
+      },
+      options: {
+        ...baseOpts,
+        plugins: { legend: { display: false },
+          tooltip: { callbacks: { label: (c) => c.datasetIndex===0
+            ? `H:${c.raw[1].toLocaleString('pt-BR')} L:${c.raw[0].toLocaleString('pt-BR')}`
+            : `C:${c.raw.toLocaleString('pt-BR')}` }}},
+        scales: {
+          x: { grid: { display: false }, ticks: { color: TICK, maxRotation: 45, autoSkip: true, maxTicksLimit: 14 } },
+          y: { grid: { color: GRID }, ticks: { color: TICK, callback: v => v.toLocaleString('pt-BR') } }
+        }
+      }
+    });
+  } else {
+    // Multi-day: line chart of daily close + shaded H-L range
+    const labels = mktData.map(d => d.date.slice(0,5)); // DD/MM only
+    const closeData = mktData.map(d => d.close);
+    const highData  = mktData.map(d => d.high || d.close);
+    const lowData   = mktData.map(d => d.low  || d.close);
+    charts.mktPrice = new Chart(document.getElementById('market-price-chart'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { data: highData, borderColor: 'rgba(27,175,122,.2)', borderWidth: 1,
+            pointRadius: 0, fill: '+1', backgroundColor: 'rgba(27,175,122,.06)', tension: 0.2, label: 'Máxima' },
+          { data: closeData, borderColor: '#2a78d6', borderWidth: 2,
+            pointRadius: 0, fill: false, tension: 0.2, label: 'Fechamento' },
+          { data: lowData, borderColor: 'rgba(227,73,72,.2)', borderWidth: 1,
+            pointRadius: 0, fill: false, backgroundColor: 'rgba(227,73,72,.06)', tension: 0.2, label: 'Mínima' },
+        ]
+      },
+      options: {
+        ...baseOpts,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: TICK, maxRotation: 45, autoSkip: true, maxTicksLimit: 10 } },
+          y: { grid: { color: GRID }, ticks: { color: TICK, callback: v => v.toLocaleString('pt-BR') } }
+        }
+      }
+    });
+  }
 
   // Cross with our daily PnL — match by date string (DD/MM/YYYY)
   const dayPnl = {};
