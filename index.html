@@ -1777,14 +1777,32 @@ function parseMarketCSV(text) {
 }
 
 
-// ─── Saved GitHub URL ─────────────────────────────────
-const GITHUB_URL_KEY = 'profit_analytics_github_url';
+// ─── Market data config ───────────────────────────────
+// Relative path: if you put a CSV file in the same folder as index.html
+// on GitHub Pages, it will be fetched automatically. Change the name below
+// to match your file. Set to '' to disable.
+const RELATIVE_CSV_PATH = 'win_data.csv';
 
+const GITHUB_URL_KEY = 'profit_analytics_github_url';
 function getSavedGithubUrl() {
   try { return localStorage.getItem(GITHUB_URL_KEY) || ''; } catch(e) { return ''; }
 }
 function saveGithubUrl(url) {
   try { localStorage.setItem(GITHUB_URL_KEY, url); } catch(e) {}
+}
+
+// Fetch a CSV from a relative path (same folder as the HTML)
+async function fetchRelativeCsv() {
+  if (!RELATIVE_CSV_PATH) return null;
+  try {
+    const r = await fetchWithTimeout(RELATIVE_CSV_PATH, 5000);
+    if (!r.ok) return null;
+    const text = await r.text();
+    const result = parseMarketCSV(text);
+    if (!result) return null;
+    result.source = `Arquivo local (${RELATIVE_CSV_PATH})`;
+    return result;
+  } catch(e) { return null; }
 }
 
 // ─── Fetch helpers ─────────────────────────────────────
@@ -1911,18 +1929,21 @@ async function loadMarketData(trades) {
   const ghConfig = document.getElementById('github-config');
   if (ghConfig) ghConfig.style.display = 'block';
 
-  // ── Tier 1: GitHub (user's own repo, saved URL) ───────
+  // ── Tier 0: Relative path (same folder as index.html) ──
+  bar.className = 'regime-status loading';
+  bar.innerHTML = `⏳ Procurando ${RELATIVE_CSV_PATH || 'arquivo local'}...`;
+  hint.style.display = 'none';
+  const r0 = await fetchRelativeCsv();
+  if (r0) { return applyMarketData(r0, bar, hint); }
+
+  // ── Tier 1: GitHub raw URL (saved from previous session) ─
   if (savedUrl) {
-    bar.className = 'regime-status loading';
     bar.innerHTML = '⏳ Carregando dados do GitHub...';
-    hint.style.display = 'none';
     const r1 = await fetchFromGitHub(savedUrl);
     if (r1) { return applyMarketData(r1, bar, hint); }
     bar.innerHTML = '⚠ GitHub: falhou — tentando brapi.dev...';
   } else {
-    bar.className = 'regime-status loading';
     bar.innerHTML = '⏳ Tentando brapi.dev (^BVSP)...';
-    hint.style.display = 'none';
   }
 
   // ── Tier 2: brapi.dev ─────────────────────────────────
@@ -1936,7 +1957,7 @@ async function loadMarketData(trades) {
 
   // ── All failed ─────────────────────────────────────────
   bar.className = 'regime-status warn';
-  bar.innerHTML = '⚠ Dados online indisponíveis. Configure um arquivo no GitHub abaixo ou carregue um CSV manualmente.';
+  bar.innerHTML = `⚠ Nenhuma fonte funcionou. Renomeie seu CSV para <strong>${RELATIVE_CSV_PATH}</strong> e coloque na mesma pasta do index.html, ou configure uma URL abaixo.`;
   hint.style.display = 'block';
   if (ghConfig) ghConfig.style.display = 'block';
 }
