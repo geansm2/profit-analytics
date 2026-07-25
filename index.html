@@ -408,12 +408,32 @@ footer{margin-top:60px;border-top:1px solid var(--brd);padding:32px 0 40px}
         <div class="sec-hdr">regime de mercado</div>
         <div class="regime-status" id="regime-status-bar" style="display:none"></div>
         <div id="regime-upload-hint" style="margin-bottom:12px">
-          <div class="alert info"><span class="alert-icon">📡</span><div><span class="alert-title">Buscando dados do WIN no Yahoo Finance...</span><span class="alert-msg">Aguarde um momento. Se o Yahoo estiver indisponível, use o botão abaixo para carregar um CSV de candles do Profit Pro.</span></div></div>
-          <label style="display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:9px 16px;background:var(--bdim);border:1px solid var(--bbrd);border-radius:8px;color:#70abee;font-size:13px;cursor:pointer;font-weight:500">
-            <input type="file" id="market-file-input-inline" accept=".csv,.txt" style="display:none">
-            📂 Carregar CSV de candles do WIN
-          </label>
-          <div style="margin-top:8px;font-size:11px;color:var(--tx3)">No Profit Pro: Gráfico → Exportar dados → salvar como CSV. Precisa das colunas Data e Fechamento (ou Close).</div>
+          <div class="alert info" id="regime-fetch-alert"><span class="alert-icon">📡</span><div><span class="alert-title">Buscando dados via brapi.dev...</span><span class="alert-msg">Aguarde um momento.</span></div></div>
+          <!-- GitHub URL config -->
+          <div id="github-config" style="margin-top:12px;background:var(--s2);border:1px solid var(--brd2);border-radius:10px;padding:16px;display:none">
+            <div style="font-size:12px;font-weight:600;color:var(--tx);margin-bottom:8px">📁 Arquivo WIN no seu repositório GitHub</div>
+            <div style="font-size:11px;color:var(--tx3);margin-bottom:10px;line-height:1.6">
+              Salve o CSV de candles do WIN no seu repositório e cole a URL raw aqui. A página vai buscar automaticamente toda vez que você abrir a aba Regime.
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <input type="text" id="github-url-input" placeholder="https://raw.githubusercontent.com/usuario/repo/main/win_data.csv"
+                style="flex:1;min-width:200px;background:var(--s3);border:1px solid var(--brd2);color:var(--tx);padding:8px 10px;border-radius:6px;font-size:12px;outline:none">
+              <button onclick="loadFromGitHub()" style="background:var(--gdim);border:1px solid var(--gbrd);color:#5dd4a8;border-radius:6px;padding:8px 14px;font-size:12px;cursor:pointer;white-space:nowrap;font-weight:500">
+                ↓ Carregar
+              </button>
+            </div>
+            <div style="margin-top:8px;font-size:11px;color:var(--tx3)">
+              <strong style="color:var(--tx2)">Como obter a URL raw:</strong> abra o arquivo no GitHub → clique em "Raw" → copie a URL da barra de endereços.
+            </div>
+          </div>
+          <!-- Manual upload fallback -->
+          <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--bdim);border:1px solid var(--bbrd);border-radius:8px;color:#70abee;font-size:13px;cursor:pointer;font-weight:500">
+              <input type="file" id="market-file-input-inline" accept=".csv,.txt" style="display:none">
+              📂 Carregar CSV manualmente
+            </label>
+            <div style="font-size:11px;color:var(--tx3)">Profit Pro: Gráfico → Exportar → CSV com colunas Data e Fechamento</div>
+          </div>
         </div>
         <div class="quant-grid" id="regime-summary-cards"></div>
       </div>
@@ -427,10 +447,11 @@ footer{margin-top:60px;border-top:1px solid var(--brd);padding:32px 0 40px}
       </div>
       <div class="section" id="market-data-section" style="display:none">
         <div class="sec-hdr">mercado WIN — dados externos</div>
-        <div class="chart-card" style="margin-bottom:12px"><div class="chart-title">WIN — preço de fechamento diário</div><div class="chart-wrap h200"><canvas id="market-price-chart"></canvas></div></div>
+        <div id="market-overlap-info" style="display:none"></div>
+        <div class="chart-card" style="margin-bottom:12px"><div class="chart-title">WIN — preço de fechamento diário (todos os candles carregados)</div><div class="chart-wrap h200"><canvas id="market-price-chart"></canvas></div></div>
         <div class="charts-row-2">
-          <div class="chart-card"><div class="chart-title">Volatilidade mercado vs seu P&amp;L (correlação)</div><div class="chart-wrap h180"><canvas id="market-vol-pnl-chart"></canvas></div></div>
-          <div class="chart-card"><div class="chart-title">Sua performance por quartil de volatilidade de mercado</div><div class="chart-wrap h180"><canvas id="market-quartile-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Volatilidade do mercado vs seu P&amp;L (requer sobreposição de datas)</div><div class="chart-wrap h180"><canvas id="market-vol-pnl-chart"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Performance por quartil de volatilidade (requer sobreposição de datas)</div><div class="chart-wrap h180"><canvas id="market-quartile-chart"></canvas></div></div>
         </div>
       </div>
     </div>
@@ -1022,40 +1043,44 @@ function computeStats(trades){
   // Slippage (Format B: trades have .slippage from order parsing)
   const slippageData=trades.filter(t=>t.slippage!=null);
 
-  // Market regime from fills — uses all available price data per day
-  // Format A (Trading report): derive implied prices from MEP/MEN ranges
-  // Format B (Order list): uses entry/exit fill prices directly
-  // Fallback: use resultado magnitude as vol proxy (always works)
-  const fillsByDay={};
+  // Market regime from fills — per-day volatility from all available price signals
+  // Groups all price-related values per day, then computes intraday dispersion as vol proxy
+  const byDayPrices={};
+  const byDayResults={};
   trades.forEach(t=>{
     const k=t.dateStr||'?';
-    if(!fillsByDay[k]) fillsByDay[k]=[];
-    // Format B: direct fill prices
-    if(t.entryFill) fillsByDay[k].push(t.entryFill);
-    if(t.exitFill)  fillsByDay[k].push(t.exitFill);
-    // Format A: MEP and MEN are absolute price excursions in R$
-    // Convert to implied price range using point value (WIN=0.20)
-    if(!t.entryFill && t.mep!=null && t.men!=null){
-      // MEP and MEN are in R$ — convert to points, use as spread proxy
-      const mepPts=Math.abs(t.mep)/0.20;
-      const menPts=Math.abs(t.men)/0.20;
-      if(mepPts>0) fillsByDay[k].push(mepPts);
-      if(menPts>0) fillsByDay[k].push(menPts);
-    }
-    // Final fallback: use |resultado| as vol signal (larger swings = more volatile)
-    if(fillsByDay[k].length===0 && t.resultado!=null){
-      fillsByDay[k].push(Math.abs(t.resultado));
-    }
+    if(!byDayPrices[k])  byDayPrices[k]=[];
+    if(!byDayResults[k]) byDayResults[k]=[];
+    byDayResults[k].push(t.resultado);
+    // Format B: direct fill prices (best signal)
+    if(t.entryFill!=null) byDayPrices[k].push(t.entryFill);
+    if(t.exitFill!=null)  byDayPrices[k].push(t.exitFill);
+    // Format A: MEP = max favorable excursion in R$, MEN = max adverse excursion in R$
+    // Each represents a price range endpoint — use both as vol contributors
+    if(t.mep!=null && Math.abs(t.mep)>0) byDayPrices[k].push(Math.abs(t.mep)/0.20);
+    if(t.men!=null && Math.abs(t.men)>0) byDayPrices[k].push(Math.abs(t.men)/0.20);
   });
-  const regimeData=Object.entries(fillsByDay).map(([date,fills])=>{
-    if(fills.length<2) return null;
-    const fm=fills.reduce((a,b)=>a+b,0)/fills.length;
-    const vol=Math.sqrt(fills.reduce((a,f)=>a+(f-fm)**2,0)/fills.length);
-    const dayTrades=trades.filter(t=>(t.dateStr||'?')===date);
-    const pnl=dayTrades.reduce((a,t)=>a+t.resultado,0);
-    const wins=dayTrades.filter(t=>t.resultado>0).length;
-    return{date,vol,pnl,n:dayTrades.length,wr:dayTrades.length?wins/dayTrades.length:0};
-  }).filter(Boolean);
+  const regimeData=Object.keys(byDayPrices).map(date=>{
+    const prices=byDayPrices[date];
+    const results=byDayResults[date]||[];
+    const pnl=results.reduce((a,b)=>a+b,0);
+    const wins=results.filter(r=>r>0).length;
+    const n=results.length;
+    let vol=0;
+    if(prices.length>=2){
+      // Standard deviation of all price signals for the day
+      const pm=prices.reduce((a,b)=>a+b,0)/prices.length;
+      vol=Math.sqrt(prices.reduce((a,p)=>a+(p-pm)**2,0)/prices.length);
+    } else if(n>=2){
+      // Fallback: std of daily results (inter-trade dispersion)
+      const rm=pnl/n;
+      vol=Math.sqrt(results.reduce((a,r)=>a+(r-rm)**2,0)/n);
+    } else if(n===1){
+      // Single trade: use |resultado| as vol signal
+      vol=Math.abs(results[0]);
+    }
+    return{date,vol,pnl,n,wr:n?wins/n:0};
+  }).filter(d=>d.n>0).sort((a,b)=>a.date.localeCompare(b.date));
   const medVol=regimeData.length?[...regimeData].sort((a,b)=>a.vol-b.vol)[Math.floor(regimeData.length/2)].vol:0;
   const highVolDays=regimeData.filter(d=>d.vol>medVol);
   const lowVolDays=regimeData.filter(d=>d.vol<=medVol);
@@ -1752,91 +1777,123 @@ function parseMarketCSV(text) {
 }
 
 
-async function fetchMarketData(startDate, endDate) {
-  // Try brapi.dev — Brazilian stocks API, free, no CORS issues, works from browsers
-  // Uses ^BVSP (Ibovespa) as WIN proxy for regime detection
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 7000);
+// ─── Saved GitHub URL ─────────────────────────────────
+const GITHUB_URL_KEY = 'profit_analytics_github_url';
 
-  const fmtDate = d => d.toISOString().slice(0, 10);
-  const start = new Date(startDate); start.setDate(start.getDate() - 10);
-  const end   = new Date(endDate);   end.setDate(end.getDate() + 5);
-
-  // brapi.dev endpoint — free, CORS-enabled, Brazilian API
-  const url = `https://brapi.dev/api/quote/%5EBVSP?range=3mo&interval=1d&fundamental=false`;
-
-  try {
-    const r = await fetch(url, { signal: controller.signal });
-    clearTimeout(timeout);
-    if (!r.ok) throw new Error('brapi status ' + r.status);
-    const data = await r.json();
-    const hist = data?.results?.[0]?.historicalDataPrice;
-    if (!hist || hist.length === 0) throw new Error('no data');
-
-    const startMs = start.getTime(), endMs = end.getTime();
-    const parsed = hist
-      .filter(d => {
-        const ts = (d.date || d.aDate) * 1000;
-        return ts >= startMs && ts <= endMs;
-      })
-      .map(d => {
-        const dateObj = new Date((d.date || d.aDate) * 1000);
-        return {
-          date: String(dateObj.getDate()).padStart(2,'0') + '/' +
-                String(dateObj.getMonth()+1).padStart(2,'0') + '/' + dateObj.getFullYear(),
-          dateObj,
-          close:  d.close,
-          high:   d.high,
-          low:    d.low,
-          volume: d.volume,
-        };
-      })
-      .sort((a, b) => a.dateObj - b.dateObj);
-
-    if (parsed.length === 0) throw new Error('no data in range');
-    return { data: parsed, source: 'brapi.dev (^BVSP proxy)', symbol: '^BVSP' };
-  } catch (e) {
-    clearTimeout(timeout);
-    // Try Yahoo Finance as secondary fallback
-    return fetchYahooFallback(start, end);
-  }
+function getSavedGithubUrl() {
+  try { return localStorage.getItem(GITHUB_URL_KEY) || ''; } catch(e) { return ''; }
+}
+function saveGithubUrl(url) {
+  try { localStorage.setItem(GITHUB_URL_KEY, url); } catch(e) {}
 }
 
-async function fetchYahooFallback(start, end) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
-  const s = Math.floor(start.getTime() / 1000);
-  const e = Math.floor(end.getTime() / 1000);
+// ─── Fetch helpers ─────────────────────────────────────
+function fetchWithTimeout(url, ms) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(t));
+}
+
+// Parse a raw CSV from GitHub (same format as parseMarketCSV)
+function githubCsvToMarketData(text, url) {
+  const result = parseMarketCSV(text);
+  if (!result) return null;
+  const repoPath = url.replace('https://raw.githubusercontent.com/', '').split('/').slice(0,2).join('/');
+  result.source = `GitHub (${repoPath})`;
+  return result;
+}
+
+// Tier 1: GitHub raw file (user's own repo — always CORS-open)
+async function fetchFromGitHub(githubUrl) {
+  if (!githubUrl || !githubUrl.includes('raw.githubusercontent.com')) return null;
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/%5EBVSP?interval=1d&period1=${s}&period2=${e}`;
-    const r = await fetch(url, { signal: controller.signal });
-    clearTimeout(timeout);
-    if (!r.ok) return null;
+    const r = await fetchWithTimeout(githubUrl, 8000);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const text = await r.text();
+    return githubCsvToMarketData(text, githubUrl);
+  } catch(e) { return null; }
+}
+
+// Tier 2: brapi.dev — Brazilian API, free, CORS-open
+async function fetchFromBrapi() {
+  try {
+    const r = await fetchWithTimeout(
+      'https://brapi.dev/api/quote/%5EBVSP?range=6mo&interval=1d&fundamental=false', 7000
+    );
+    if (!r.ok) throw new Error('brapi ' + r.status);
     const data = await r.json();
-    const chart = data?.chart?.result?.[0];
-    if (!chart) return null;
-    const ts = chart.timestamp || chart.timestamps;
-    const closes = chart.indicators?.quote?.[0]?.close;
-    const highs  = chart.indicators?.quote?.[0]?.high;
-    const lows   = chart.indicators?.quote?.[0]?.low;
-    if (!ts || !closes) return null;
-    const parsed = ts.map((t, i) => {
-      const dateObj = new Date(t * 1000);
+    const hist = data?.results?.[0]?.historicalDataPrice;
+    if (!hist?.length) throw new Error('no data');
+    const parsed = hist.map(d => {
+      const dateObj = new Date((d.date || d.aDate) * 1000);
       return {
         date: String(dateObj.getDate()).padStart(2,'0') + '/' +
               String(dateObj.getMonth()+1).padStart(2,'0') + '/' + dateObj.getFullYear(),
-        dateObj, close: closes[i], high: highs?.[i], low: lows?.[i],
+        dateObj, close: d.close, high: d.high, low: d.low, volume: d.volume,
       };
-    }).filter(d => d.close != null).sort((a, b) => a.dateObj - b.dateObj);
-    if (parsed.length === 0) return null;
+    }).filter(d => d.close).sort((a,b) => a.dateObj - b.dateObj);
+    if (!parsed.length) throw new Error('empty');
+    return { data: parsed, source: 'brapi.dev (^BVSP)', symbol: '^BVSP' };
+  } catch(e) { return null; }
+}
+
+// Tier 3: Yahoo Finance — inconsistent CORS, try anyway
+async function fetchFromYahoo() {
+  try {
+    const end = Math.floor(Date.now()/1000);
+    const start = end - 86400*200;
+    const r = await fetchWithTimeout(
+      `https://query1.finance.yahoo.com/v8/finance/chart/%5EBVSP?interval=1d&period1=${start}&period2=${end}`, 5000
+    );
+    if (!r.ok) throw new Error('yahoo ' + r.status);
+    const data = await r.json();
+    const chart = data?.chart?.result?.[0];
+    const ts = chart?.timestamp;
+    const q = chart?.indicators?.quote?.[0];
+    if (!ts || !q?.close) throw new Error('no chart data');
+    const parsed = ts.map((t,i) => {
+      const dateObj = new Date(t*1000);
+      return {
+        date: String(dateObj.getDate()).padStart(2,'0') + '/' +
+              String(dateObj.getMonth()+1).padStart(2,'0') + '/' + dateObj.getFullYear(),
+        dateObj, close: q.close[i], high: q.high?.[i], low: q.low?.[i],
+      };
+    }).filter(d => d.close).sort((a,b) => a.dateObj - b.dateObj);
+    if (!parsed.length) throw new Error('empty');
     return { data: parsed, source: 'Yahoo Finance (^BVSP)', symbol: '^BVSP' };
-  } catch (e) {
-    clearTimeout(timeout);
-    return null;
+  } catch(e) { return null; }
+}
+
+// Load from GitHub URL typed/pasted by user
+async function loadFromGitHub() {
+  const input = document.getElementById('github-url-input');
+  const url = (input?.value || '').trim();
+  if (!url) { alert('Cole a URL raw do GitHub primeiro.'); return; }
+  if (!url.includes('raw.githubusercontent.com')) {
+    alert('A URL deve ser de raw.githubusercontent.com\nAbra o arquivo no GitHub → clique em "Raw" → copie a URL.'); return;
+  }
+  const bar = document.getElementById('regime-status-bar');
+  bar.style.display = 'flex';
+  bar.className = 'regime-status loading';
+  bar.innerHTML = '⏳ Carregando do GitHub...';
+  const result = await fetchFromGitHub(url);
+  if (result) {
+    saveGithubUrl(url);
+    marketDataCache = result;
+    bar.className = 'regime-status ok';
+    bar.innerHTML = `✓ ${result.source} · ${result.data.length} sessões · URL salva automaticamente`;
+    document.getElementById('regime-upload-hint').style.display = 'none';
+    document.getElementById('market-badge').textContent = '📊 ' + result.source;
+    document.getElementById('market-badge').style.display = '';
+    document.getElementById('market-data-section').style.display = 'block';
+    if (statsCache) renderRegimeCharts(statsCache, result);
+  } else {
+    bar.className = 'regime-status warn';
+    bar.innerHTML = '⚠ Não foi possível carregar do GitHub. Verifique se a URL é um arquivo raw público.';
   }
 }
 async function loadMarketData(trades) {
-  const bar = document.getElementById('regime-status-bar');
+  const bar  = document.getElementById('regime-status-bar');
   const hint = document.getElementById('regime-upload-hint');
   bar.style.display = 'flex';
 
@@ -1845,38 +1902,66 @@ async function loadMarketData(trades) {
     return;
   }
 
-  // Determine date range from trades
-  const dates = trades.map(t => t.dateObj).filter(Boolean).sort((a, b) => a - b);
-  if (!dates.length) { bar.className = 'regime-status warn'; bar.innerHTML = '⚠ Sem datas nos trades para buscar dados de mercado'; return; }
-  const startDate = new Date(dates[0]); startDate.setDate(startDate.getDate() - 10);
-  const endDate = new Date(dates[dates.length - 1]); endDate.setDate(endDate.getDate() + 5);
+  // Restore saved GitHub URL into the input field
+  const savedUrl = getSavedGithubUrl();
+  const urlInput = document.getElementById('github-url-input');
+  if (savedUrl && urlInput) urlInput.value = savedUrl;
 
-  bar.className = 'regime-status loading';
-  bar.innerHTML = '⏳ Buscando dados do WIN via brapi.dev...';
-  hint.style.display = 'none';
+  // Show GitHub config box if user has a saved URL
+  const ghConfig = document.getElementById('github-config');
+  if (ghConfig) ghConfig.style.display = 'block';
 
-  const result = await fetchMarketData(startDate, endDate);
-
-  if (result) {
-    marketDataCache = result;
-    bar.className = 'regime-status ok';
-    bar.innerHTML = `✓ Dados carregados: ${result.source} · ${result.data.length} sessões`;
-    document.getElementById('market-badge').textContent = '📊 ' + result.source;
-    document.getElementById('market-badge').style.display = '';
-    document.getElementById('market-data-section').style.display = 'block';
+  // ── Tier 1: GitHub (user's own repo, saved URL) ───────
+  if (savedUrl) {
+    bar.className = 'regime-status loading';
+    bar.innerHTML = '⏳ Carregando dados do GitHub...';
     hint.style.display = 'none';
-    renderRegimeCharts(statsCache, result);
+    const r1 = await fetchFromGitHub(savedUrl);
+    if (r1) { return applyMarketData(r1, bar, hint); }
+    bar.innerHTML = '⚠ GitHub: falhou — tentando brapi.dev...';
   } else {
-    bar.className = 'regime-status warn';
-    bar.innerHTML = '⚠ Dados online indisponíveis — use o botão abaixo para carregar um CSV de candles. A análise de regime pelos fills internos já está ativa.';
-    hint.style.display = 'block';
-    renderRegimeFromFills(statsCache);
+    bar.className = 'regime-status loading';
+    bar.innerHTML = '⏳ Tentando brapi.dev (^BVSP)...';
+    hint.style.display = 'none';
   }
+
+  // ── Tier 2: brapi.dev ─────────────────────────────────
+  const r2 = await fetchFromBrapi();
+  if (r2) { return applyMarketData(r2, bar, hint); }
+
+  // ── Tier 3: Yahoo Finance ──────────────────────────────
+  bar.innerHTML = '⏳ Tentando Yahoo Finance...';
+  const r3 = await fetchFromYahoo();
+  if (r3) { return applyMarketData(r3, bar, hint); }
+
+  // ── All failed ─────────────────────────────────────────
+  bar.className = 'regime-status warn';
+  bar.innerHTML = '⚠ Dados online indisponíveis. Configure um arquivo no GitHub abaixo ou carregue um CSV manualmente.';
+  hint.style.display = 'block';
+  if (ghConfig) ghConfig.style.display = 'block';
+}
+
+function applyMarketData(result, bar, hint) {
+  marketDataCache = result;
+  bar.className = 'regime-status ok';
+  bar.innerHTML = `✓ ${result.source} · ${result.data.length} sessões`;
+  document.getElementById('market-badge').textContent = '📊 ' + result.source;
+  document.getElementById('market-badge').style.display = '';
+  document.getElementById('market-data-section').style.display = 'block';
+  if (hint) hint.style.display = 'none';
+  if (statsCache) renderRegimeCharts(statsCache, result);
 }
 
 // ─── Regime Tab render ─────────────────────────────────
 function renderRegime(s) {
   if (!s) return;
+  // Debug: log regime data to console for inspection
+  console.log('[Regime] regimeData:', s.regimeData?.length, 'entries', s.regimeData?.slice(0,3));
+  console.log('[Regime] dayDetail dates sample:', s.dayDetail?.slice(0,3).map(d=>d.date));
+  if (marketDataCache) {
+    console.log('[Regime] mktData dates sample:', marketDataCache.data?.slice(0,3).map(d=>d.date));
+    console.log('[Regime] mktData length:', marketDataCache.data?.length);
+  }
   // Always render fills-based regime immediately (no async, always works)
   renderRegimeFromFills(s);
   // If we already have market data cached, render it right away
@@ -1898,10 +1983,28 @@ function renderRegime(s) {
 function renderRegimeFromFills(s) {
   if (!s.regimeData || s.regimeData.length === 0) return;
 
-  // Summary cards
-  const medV = s.medVol;
-  const highDays = s.regimeData.filter(d => d.vol > medV);
-  const lowDays = s.regimeData.filter(d => d.vol <= medV);
+  // If all vol values are identical (e.g. all zero), use median split on |pnl| instead
+  const allSameVol = s.regimeData.every(d => d.vol === s.regimeData[0].vol);
+  let effectiveVol = s.regimeData;
+  if (allSameVol && s.regimeData.length > 1) {
+    // Fall back: rank days by absolute P&L as vol proxy
+    const sorted = [...s.regimeData].sort((a,b) => Math.abs(b.pnl) - Math.abs(a.pnl));
+    const half = Math.floor(sorted.length / 2);
+    sorted.forEach((d, i) => d._volRank = i < half ? 'high' : 'low');
+    effectiveVol = sorted;
+  }
+
+  // Compute medV robustly
+  const medV = allSameVol
+    ? 0  // will use _volRank instead
+    : s.medVol;
+
+  const highDays = allSameVol
+    ? effectiveVol.filter(d => d._volRank === 'high')
+    : s.regimeData.filter(d => d.vol > medV);
+  const lowDays = allSameVol
+    ? effectiveVol.filter(d => d._volRank === 'low')
+    : s.regimeData.filter(d => d.vol <= medV);
   const wrHigh = highDays.length ? highDays.reduce((a, d) => a + d.wr, 0) / highDays.length : 0;
   const wrLow = lowDays.length ? lowDays.reduce((a, d) => a + d.wr, 0) / lowDays.length : 0;
 
@@ -1978,21 +2081,36 @@ function renderRegimeCharts(s, mkt) {
     options: { ...baseOpts, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: TICK, maxRotation: 45, autoSkip: true, maxTicksLimit: 10 } }, y: { grid: { color: GRID }, ticks: { color: TICK, callback: v => v.toLocaleString('pt-BR') } } } }
   });
 
-  // Cross with our daily PnL: match dates
+  // Cross with our daily PnL — match by date string (DD/MM/YYYY)
   const dayPnl = {};
   s.dayDetail.forEach(d => { dayPnl[d.date] = d.sum; });
 
-  // Market daily vol (high-low range as vol proxy)
-  const mktVol = mktData.map(d => d.high && d.low ? d.high - d.low : 0);
+  // Market daily vol proxy: high-low range in points
+  const mktVol = mktData.map(d => (d.high && d.low) ? (d.high - d.low) : 0);
   const medMktVol = [...mktVol].sort((a, b) => a - b)[Math.floor(mktVol.length / 2)];
 
-  // For each market day, find our pnl
+  // For each market day, find our pnl — match by exact date string
   const crossData = mktData.map((d, i) => {
-    const dateStr = d.date;
-    // try to match by date string
-    const pnl = dayPnl[dateStr] ?? null;
-    return { date: dateStr, mktVol: mktVol[i], pnl };
+    const pnl = dayPnl[d.date] ?? null;
+    return { date: d.date, mktVol: mktVol[i], pnl };
   }).filter(d => d.pnl !== null);
+
+  // Show overlap diagnostic
+  const overlapEl = document.getElementById('market-overlap-info');
+  if (overlapEl) {
+    if (crossData.length === 0) {
+      const tradeDates = Object.keys(dayPnl).slice(0,3).join(', ');
+      const mktDates = mktData.slice(0,3).map(d=>d.date).join(', ');
+      overlapEl.innerHTML = `<div class="alert warn" style="margin-bottom:12px"><span class="alert-icon">📅</span><div>
+        <span class="alert-title">Sem sobreposição de datas entre trades e candles</span>
+        <span class="alert-msg">Seus trades: ${tradeDates}... · Candles carregados: ${mktDates}...<br>
+        Carregue um CSV com dados do mesmo período dos seus trades para ver os gráficos de correlação.</span>
+      </div></div>`;
+      overlapEl.style.display = 'block';
+    } else {
+      overlapEl.style.display = 'none';
+    }
+  }
 
   // Vol-PnL scatter
   if (charts.mktVolPnl) charts.mktVolPnl.destroy();
