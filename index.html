@@ -689,48 +689,79 @@ function parseFormatB(lines){
   for(const key of Object.keys(groups).sort()){
     const ords=groups[key];
     const pv=POINT_VALUE[ords[0].sym]||0.20;
-    let pos=0,cost=0.0,tradeStart=null,tradeClose=null,tradeMaxPos=0,tradeSide='';
+
+    // CORRECT algorithm:
+    // pmedio = fill price of THIS specific order (not position running avg)
+    // pos_avg = TRUE weighted avg maintained by us
+    // For BUY:  pos_avg = (pos_avg*pos + fill*qty) / (pos+qty)
+    // For SELL: realize P&L = (fill - pos_avg) * qty * pv  (pos_avg unchanged)
+    // Accumulate realized P&L across partials; record trade at pos→0 or reversal
+
+    let pos=0, posAvg=0.0, realizedPnl=0.0, tradeStart=null, tradeMaxPos=0;
 
     for(const o of ords){
-      const signed=o['lado']==='C'?o.qtd:-o.qtd;
+      const isBuy = o.lado==='C';
+      const qty   = o.qtd;
+      const fill  = o.fill;  // pmedio = actual fill price of this order
+      const newPos = pos + (isBuy ? qty : -qty);
 
       if(pos===0){
-        // Open new position
-        tradeStart=o; cost=signed*o.fill; pos=signed;
-        tradeMaxPos=Math.abs(pos); tradeSide=o.lado;
-      } else if((pos>0&&signed>0)||(pos<0&&signed<0)){
-        // Add to existing position (pyramid)
-        cost+=signed*o.fill; pos+=signed;
-        tradeMaxPos=Math.max(tradeMaxPos,Math.abs(pos));
-      } else {
-        // Opposing order — partial close, full close, or reversal
-        const newPos=pos+signed;
-        const avgEntry=cost/pos;
+        // Opening fresh position
+        tradeStart=o;
+        posAvg=fill;
+        pos=isBuy?qty:-qty;
+        tradeMaxPos=qty;
+        realizedPnl=0.0;
 
-        if(newPos===0){
+      } else if((pos>0&&isBuy)||(pos<0&&!isBuy)){
+        // Adding to position (pyramid): update true weighted avg
+        const oldCost=posAvg*Math.abs(pos);
+        const newCost=oldCost+fill*qty;
+        pos=newPos;
+        posAvg=newCost/Math.abs(pos);
+        tradeMaxPos=Math.max(tradeMaxPos,Math.abs(pos));
+
+      } else {
+        // Opposing order: realize P&L for these lots
+        // pos_avg stays the same (cost basis of remaining lots unchanged)
+        const pnlThisFill = pos>0
+          ? (fill - posAvg) * qty * pv      // long: sell at fill
+          : (posAvg - fill) * qty * pv;     // short: buy back at fill
+
+        const newPos2 = pos + (isBuy ? qty : -qty);
+
+        if(newPos2===0){
           // Full close
-          const pnl=(o.fill-avgEntry)*pos*pv;
-          trades.push(makeTrade(tradeNum++,tradeStart,o,pnl,tradeMaxPos,FD));
-          pos=0; cost=0.0; tradeStart=null; tradeMaxPos=0;
-        } else if((pos>0&&newPos<0)||(pos<0&&newPos>0)){
-          // Reversal: close current, open opposite with remainder
-          const pnl=(o.fill-avgEntry)*pos*pv;
-          trades.push(makeTrade(tradeNum++,tradeStart,o,pnl,tradeMaxPos,FD));
-          pos=newPos; cost=newPos*o.fill;
-          tradeStart=o; tradeMaxPos=Math.abs(pos);
+          realizedPnl += pnlThisFill;
+          trades.push(makeTrade(tradeNum++,tradeStart,o,realizedPnl,tradeMaxPos,FD));
+          pos=0; posAvg=0.0; realizedPnl=0.0; tradeStart=null; tradeMaxPos=0;
+
+        } else if((pos>0&&newPos2<0)||(pos<0&&newPos2>0)){
+          // Reversal: close full current position, open new opposite
+          const closedQty=Math.abs(pos);
+          const pnlClose = pos>0
+            ? (fill - posAvg) * closedQty * pv
+            : (posAvg - fill) * closedQty * pv;
+          realizedPnl += pnlClose;
+          trades.push(makeTrade(tradeNum++,tradeStart,o,realizedPnl,tradeMaxPos,FD));
+          // Open new position with the remainder qty
+          const remQty=qty-closedQty;
+          pos=isBuy?remQty:-remQty;
+          posAvg=fill;
+          tradeStart=o;
+          tradeMaxPos=remQty;
+          realizedPnl=0.0;
+
         } else {
-          // Partial close: update cost basis proportionally, keep position open
-          cost=(cost/pos)*newPos;
-          pos=newPos;
+          // Partial close: accumulate P&L, pos_avg unchanged, reduce position
+          realizedPnl += pnlThisFill;
+          pos = newPos2;
         }
       }
     }
-    // If position still open at EOD (shouldn't happen in DayTrade, but handle it)
+    // Position still open at EOD
     if(pos!==0&&tradeStart){
-      const avgEntry=cost/pos;
-      const lastO=ords[ords.length-1];
-      const pnl=0; // mark as open / unknown result
-      trades.push(makeTrade(tradeNum++,tradeStart,lastO,pnl,tradeMaxPos,FD,true));
+      trades.push(makeTrade(tradeNum++,tradeStart,ords[ords.length-1],realizedPnl,tradeMaxPos,FD,true));
     }
   }
 
